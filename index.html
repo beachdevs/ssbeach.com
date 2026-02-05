@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sunset Beach Labs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #fafafa;
+      color: #1a1a1a;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 2rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .nav-left { opacity: 0.6; }
+    .nav-center { display: flex; gap: 2rem; }
+    .nav-center a { color: inherit; text-decoration: none; opacity: 0.7; }
+    .nav-center a:hover { opacity: 1; }
+    .nav-right { opacity: 0.6; }
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 2rem;
+    }
+    .hero {
+      text-align: center;
+      letter-spacing: 0.02em;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 6vw, 4rem);
+      font-weight: 400;
+      letter-spacing: 0.12em;
+    }
+    .hero p {
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      opacity: 0.6;
+      letter-spacing: 0.05em;
+    }
+    footer {
+      padding: 1.5rem 2rem;
+      text-align: center;
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      opacity: 0.5;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="nav-left">+</span>
+    <nav class="nav-center">
+      <a href="#">About</a>
+      <a href="#">Work</a>
+      <a href="#">Contact</a>
+    </nav>
+    <span class="nav-right">○</span>
+  </header>
+  <main>
+    <section class="hero">
+      <h1>sunset beach</h1>
+      <p>Building in the open</p>
+    </section>
+  </main>
+  <footer>
+    c 2026 sunset beach labs all rights reserved
+  </footer>
+</body>
+</html>
