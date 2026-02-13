@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The End of Config Hell | Sunset Beach Labs</title>
+  <meta name="description" content="Moving beyond YAML to proper infrastructure abstractions. How we reduced 47,000 lines of config to 400 lines of code while improving reliability.">
+  <meta name="keywords" content="infrastructure as code, YAML alternatives, Kubernetes, deployment automation, configuration management">
+  <link rel="canonical" href="https://ssbeach.com/blog/the-end-of-config-hell.html">
+  
+  <meta property="og:title" content="The End of Config Hell">
+  <meta property="og:description" content="Moving beyond YAML to proper infrastructure abstractions. Reducing complexity while improving reliability.">
+  <meta property="og:url" content="https://ssbeach.com/blog/the-end-of-config-hell.html">
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-01-28">
+  <meta property="article:author" content="Sunset Beach Labs">
+  <meta property="article:section" content="Infrastructure">
+  <meta property="og:site_name" content="Sunset Beach Labs">
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="The End of Config Hell">
+  <meta name="twitter:description" content="Moving beyond YAML to proper infrastructure abstractions. Reducing complexity while improving reliability.">
+  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "The End of Config Hell",
+    "description": "Moving beyond YAML to proper infrastructure abstractions. How we reduced 47,000 lines of config to 400 lines of code.",
+    "url": "https://ssbeach.com/blog/the-end-of-config-hell.html",
+    "datePublished": "2026-01-28",
+    "author": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    }
+  }
+  </script>
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --text-primary: #1d1d1f;
+      --text-secondary: #86868b;
+      --text-tertiary: #6e6e73;
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #ffffff;
+      --link-blue: #0066cc;
+      --link-hover: #0077ed;
+      --border: #d2d2d7;
+      --code-bg: #f5f5f7;
+      --code-border: #d2d2d7;
+    }
+
+    html {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.47059;
+      font-weight: 400;
+      letter-spacing: -0.021em;
+      font-size: 17px;
+    }
+
+    /* Navigation */
+    nav {
+      position: sticky;
+      top: 0;
+      background: rgba(251, 251, 253, 0.8);
+      backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      z-index: 100;
+    }
+
+    .nav-content {
+      max-width: 1024px;
+      margin: 0 auto;
+      padding: 0 22px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-size: 21px;
+      font-weight: 600;
+      letter-spacing: -0.021em;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+    }
+
+    .nav-links a {
+      font-size: 12px;
+      color: var(--text-primary);
+      text-decoration: none;
+      opacity: 0.8;
+      transition: opacity 0.3s;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-links a:hover {
+      opacity: 1;
+    }
+
+    /* Article */
+    article {
+      max-width: 735px;
+      margin: 0 auto;
+      padding: 80px 22px 100px;
+      background: var(--bg-secondary);
+      min-height: calc(100vh - 48px);
+    }
+
+    header {
+      margin-bottom: 52px;
+    }
+
+    h1 {
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      line-height: 1.08349;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+
+    .meta {
+      font-size: 14px;
+      color: var(--text-tertiary);
+      letter-spacing: -0.016em;
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.021em;
+      line-height: 1.14286;
+      margin: 48px 0 16px;
+      color: var(--text-primary);
+    }
+
+    p {
+      margin-bottom: 20px;
+      font-size: 17px;
+      line-height: 1.47059;
+      letter-spacing: -0.021em;
+      color: var(--text-primary);
+    }
+
+    code {
+      background: rgba(0,0,0,0.04);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+      font-size: 0.9em;
+      color: var(--text-primary);
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-radius: 12px;
+      padding: 24px;
+      overflow-x: auto;
+      margin: 24px 0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      border-radius: 0;
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+      color: var(--text-primary);
+    }
+
+    a {
+      color: var(--link-blue);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .back {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 48px;
+      font-size: 17px;
+      color: var(--link-blue);
+      text-decoration: none;
+      letter-spacing: -0.021em;
+      font-weight: 400;
+    }
+
+    .back:hover {
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--bg-primary);
+      padding: 40px 22px;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    footer p {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      letter-spacing: -0.01em;
+      margin: 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 734px) {
+      article {
+        padding: 60px 20px 80px;
+      }
+
+      h1 {
+        font-size: 28px;
+        letter-spacing: -0.021em;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+
+      p {
+        font-size: 16px;
+      }
+
+      pre {
+        padding: 16px;
+        border-radius: 8px;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    article {
+      animation: fadeIn 0.8s ease-out forwards;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-content">
+      <a href="/" class="nav-logo">Sunset Beach</a>
+      <div class="nav-links">
+        <a href="/#writing">Writing</a>
+        <a href="/#projects">Projects</a>
+        <a href="mailto:io@ssbeach.com">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <article>
+    <header>
+      <h1>The End of Config Hell</h1>
+      <div class="meta">January 28, 2026 · Infrastructure</div>
+    </header>
+    
+    <p>I recently migrated a 200-service Kubernetes cluster to a new deployment system. The old setup had 47,000 lines of YAML. The new one has 400 lines of Python. Same infrastructure, same capabilities, drastically different maintainability.</p>
+    
+    <p>This isn't about abandoning declarative infrastructure. It's about admitting that YAML isn't code, and configuration at scale needs real abstractions.</p>
+    
+    <h2>The YAML Trap</h2>
+    
+    <p>We've convinced ourselves that YAML is "simple." But simple to read isn't the same as simple to maintain. Consider this real-world snippet I found in production:</p>
+    
+    <pre><code>annotations:
+  nginx.ingress.kubernetes.io/configuration-snippet: |
+    if ($request_method = 'OPTIONS') {
+      add_header 'Access-Control-Allow-Origin' '*';
+      add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+      add_header 'Access-Control-Max-Age' 1728000;
+      add_header 'Content-Type' 'text/plain; charset=utf-8';
+      add_header 'Content-Length' 0;
+      return 204;
+    }</code></pre>
+    
+    <p>That's a Turing-complete language crammed into a string inside YAML. We've recreated PHP's greatest hits, one annotation at a time.</p>
+    
+    <h2>Abstractions That Work</h2>
+    
+    <p>The solution isn't abandoning infrastructure-as-code. It's choosing the right level of abstraction. At Sunset Beach, we've converged on a pattern:</p>
+    
+    <p><strong>Define intent, not implementation.</strong> Instead of describing every Kubernetes resource, describe what the service needs: ports, scaling requirements, storage. The platform translates that to the right primitives.</p>
+    
+    <pre><code>service "api-gateway" {
+  port = 8080
+  scale = { min = 3, max = 20 }
+  
+  resources {
+    cpu = "1-4"
+    memory = "2-8Gi"
+  }
+  
+  health_check {
+    path = "/health"
+    interval = "30s"
+  }
+}</code></pre>
+    
+    <p>This is 20 lines versus 200 lines of equivalent Kubernetes manifests. And it compiles to proper YAML when needed — you're not locked in.</p>
+    
+    <h2>The Power of Compilation</h2>
+    
+    <p>The key insight: treat infrastructure definitions like programs. Type checking, validation, and testing should happen before deployment, not after.</p>
+    
+    <p>We've built a system where:</p>
+    
+    <pre><code>- Every change is type-checked against the cloud provider's API
+- Resources are validated for security policies
+- Cost estimates are generated pre-deployment
+- Drift detection runs continuously</code></pre>
+    
+    <p>This catches errors that would have taken down production. Last month, it flagged a missing encryption configuration that would have violated compliance.</p>
+    
+    <h2>Embracing Imperative Where It Helps</h2>
+    
+    <p>Sometimes you need imperative logic. Migrations, blue-green deployments, canary analysis — these are procedures, not state declarations. We use embedded scripting for these cases, with full rollback support.</p>
+    
+    <p>The result? Our SRE team spends 70% less time on routine deployments. They focus on hard problems instead of YAML indentation.</p>
+    
+    <h2>The Future</h2>
+    
+    <p>We're moving toward a world where infrastructure definitions are versioned artifacts with semantic meaning. Where `terraform plan` is just one possible output. Where AI can reason about your architecture because it's expressed as structured data, not text templates.</p>
+    
+    <p>The YAML isn't going away tomorrow. But maybe it should.</p>
+    
+    <a href="/" class="back">← Back to Home</a>
+  </article>
+
+  <footer>
+    <p>&copy; 2026 Sunset Beach Inference Labs. All rights reserved.</p>
+  </footer>
+</body>
+</html>

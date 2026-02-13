@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Observability for Systems That Can't Fail | Sunset Beach Labs</title>
+  <meta name="description" content="Building observability systems that tell you why things break, not just when. Structured logging, distributed tracing, and intelligent alerting.">
+  <meta name="keywords" content="observability, distributed tracing, structured logging, monitoring, SRE, reliability engineering">
+  <link rel="canonical" href="https://ssbeach.com/blog/observability-for-systems-that-cant-fail.html">
+  
+  <meta property="og:title" content="Observability for Systems That Can't Fail">
+  <meta property="og:description" content="Building observability systems that tell you why things break, not just when. Structured logging, tracing, and alerting.">
+  <meta property="og:url" content="https://ssbeach.com/blog/observability-for-systems-that-cant-fail.html">
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-03-13">
+  <meta property="article:author" content="Sunset Beach Labs">
+  <meta property="article:section" content="Reliability">
+  <meta property="og:site_name" content="Sunset Beach Labs">
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Observability for Systems That Can't Fail">
+  <meta name="twitter:description" content="Building observability systems that tell you why things break, not just when. Structured logging, tracing, and alerting.">
+  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Observability for Systems That Can't Fail",
+    "description": "Building observability systems that tell you why things break, not just when. Structured logging, distributed tracing, and intelligent alerting.",
+    "url": "https://ssbeach.com/blog/observability-for-systems-that-cant-fail.html",
+    "datePublished": "2026-03-13",
+    "author": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    }
+  }
+  </script>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --fg: #111;
+      --fg-muted: #888;
+      --bg: #faf9f7;
+      --accent: #c8a46e;
+      --rule: #e4e0da;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--fg);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.7;
+    }
+    article {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 400;
+      font-style: italic;
+      font-size: 2.2rem;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .meta {
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+    }
+    h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 400;
+      font-size: 1.25rem;
+      margin: 2.5rem 0 1rem;
+    }
+    p {
+      margin-bottom: 1.2rem;
+    }
+    code {
+      background: rgba(0,0,0,0.04);
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.9em;
+    }
+    pre {
+      background: #f5f3f0;
+      padding: 1.2rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+      font-size: 0.85rem;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+    a:hover {
+      border-color: var(--accent);
+    }
+    .back {
+      display: inline-block;
+      margin-top: 3rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Observability for Systems That Can't Fail</h1>
+      <div class="meta">March 13, 2026 · Reliability</div>
+    </header>
+    
+    <p>At 2:47 AM last month, our payment processing pipeline stopped. No alerts fired. No dashboards turned red. Customers just couldn't complete purchases.</p>
+    
+    <p>It took 23 minutes to find the problem. It took 8 minutes to fix. The 23 minutes cost us more than the outage itself.</p>
+    
+    <p>We rebuilt our observability from first principles.</p>
+    
+    <h2>Monitoring Tells You When. Observability Tells You Why.</h2>
+    
+    <p>Traditional monitoring tracks known metrics. CPU usage. Error rates. Request latency. These tell you something is wrong, but not why.</p>
+    
+    <p>Observability is about asking unknown questions. "Show me all requests from user 12345 that failed in the last hour." "Trace the path of order #987654 through the system." These aren't pre-defined metrics. They're ad-hoc investigations.</p>
+    
+    <p>The three pillars: logs, metrics, and traces. Most teams have all three. Few use them together effectively.</p>
+    
+    <h2>Structured Logging Is Non-Negotiable</h2>
+    
+    <p>Unstructured logs: <code>2026-03-13 14:32:01 INFO User login successful</code></p>
+    
+    <p>Structured logs:</p>
+    
+    <pre><code>{
+  "timestamp": "2026-03-13T14:32:01.234Z",
+  "level": "INFO",
+  "message": "User login successful",
+  "event": "user.login",
+  "user_id": "user_12345",
+  "ip_address": "203.0.113.42",
+  "user_agent": "Mozilla/5.0...",
+  "duration_ms": 245,
+  "trace_id": "abc123def456"
+}</code></pre>
+    
+    <p>The difference: machine readability. You can filter structured logs by any field. You can aggregate by user. You can correlate with traces. Unstructured logs require parsing that breaks when format changes.</p>
+    
+    <p>We enforce structure with code generation. Every event has a schema. The logging library validates at compile time. Wrong field name? Build fails.</p>
+    
+    <h2>Distributed Tracing That Works</h2>
+    
+    <p>In a microservices architecture, a single user request touches dozens of services. When it's slow, which one is the problem?</p>
+    
+    <p>We use OpenTelemetry for tracing. Every request gets a trace ID propagated across service boundaries. Each service creates spans:</p>
+    
+    <pre><code>Trace: abc123
+├── API Gateway (45ms)
+├── Auth Service (12ms)
+├── User Service (67ms)
+│   └── Database Query (45ms)
+├── Payment Service (234ms)
+│   ├── Validation (23ms)
+│   ├── Fraud Check (145ms)
+│   └── Processor Call (56ms)
+└── Notification Service (34ms)</code></pre>
+    
+    <p>At a glance, we see the payment service is slow. Drill down: fraud check is the culprit. Root cause analysis in seconds, not hours.</p>
+    
+    <h2>Correlating Everything</h2>
+    
+    <p>Logs, metrics, and traces are separate systems in most organizations. We unified them with a single trace ID:</p>
+    
+    <pre><code>- Every log entry includes trace_id
+- Every metric is tagged with trace_id (where applicable)
+- Every trace links to related logs
+
+Click a slow trace → See all logs from that request
+Click an error log → See the trace that generated it</code></pre>
+    
+    <p>This correlation turns debugging from archaeology into navigation. You start with a symptom and follow the breadcrumbs.</p>
+    
+    <h2>Smart Alerting</h2>
+    
+    <p>Most alerting is broken. Alert on CPU > 80%? You'll wake someone up for a healthy spike. Alert on errors > 0? You'll miss gradual degradation.</p>
+    
+    <p>We use SLO-based alerting:</p>
+    
+    <pre><code>Objective: 99.9% of requests succeed in < 200ms
+Alert when: Error budget burns > 2% in 1 hour</code></pre>
+    
+    <p>This aligns alerts with user impact. A brief spike that doesn't affect the SLO? No alert. A gradual increase that will breach the SLO in 4 hours? Page someone before customers notice.</p>
+    
+    <p>We also use anomaly detection. Not "is this metric high?" but "is this pattern unusual?" Our ML model learns normal behavior and alerts on deviations. It caught a memory leak that gradual alerts missed.</p>
+    
+    <h2>The Cost Problem</h2>
+    
+    <p>Observability data is expensive to store. We handle 50TB of logs daily. Traces add another 20TB. Storing everything forever isn't feasible.</p>
+    
+    <p>Our retention strategy:</p>
+    
+    <pre><code>- Raw logs: 7 days
+- Aggregated metrics: 1 year
+- Sampled traces (1%): 30 days
+- Error traces (100%): 90 days
+- Custom retention for audit logs: 7 years</code></pre>
+    
+    <p>We sample happy paths aggressively. But we keep 100% of errors and slow requests. The data that matters for debugging is always available.</p>
+    
+    <h2>Developer Experience</h2>
+    
+    <p>Observability isn't just for SREs. Developers need it to understand their code in production.</p>
+    
+    <p>We built a query language that feels like coding:</p>
+    
+    <pre><code>from logs
+where service = "payment-api"
+  and level = "ERROR"
+  and timestamp > now() - 1h
+group by error_type
+order by count desc
+limit 10</code></pre>
+    
+    <p>No clicking through UI. No learning a proprietary query language. Just SQL-like syntax that developers already know.</p>
+    
+    <h2>The Incident That Proved It</h2>
+    
+    <p>Last week, latency spiked on our search API. Old us would have checked dashboards, looked at recent deploys, guessed at causes.</p>
+    
+    <p>New us: trace the slow requests, see they're all hitting a specific database shard, check logs for that shard, find a lock contention issue, identify the query causing it. Total time: 4 minutes.</p>
+    
+    <p>The fix was a missing index. The value was knowing exactly where to look.</p>
+    
+    <h2>Building for Unknown Unknowns</h2>
+    
+    <p>You can't predict every failure mode. But you can build systems that help you understand any failure quickly.</p>
+    
+    <p>Structured data. Correlated signals. Fast queries. These aren't nice-to-haves. They're the difference between minutes and hours of downtime.</p>
+    
+    <p>We don't just monitor our systems. We make them observable. And that makes all the difference.</p>
+    
+    <a href="/index.html" class="back">← Back to Home</a>
+  </article>
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zero Trust Without the Pain | Sunset Beach Labs</title>
+  <meta name="description" content="Implementing zero-trust security without breaking developer productivity. Practical patterns for identity, authorization, and network segmentation.">
+  <meta name="keywords" content="zero trust security, identity management, authorization, network security, microservices security, OAuth2">
+  <link rel="canonical" href="https://ssbeach.com/blog/zero-trust-without-the-pain.html">
+  
+  <meta property="og:title" content="Zero Trust Without the Pain">
+  <meta property="og:description" content="Implementing zero-trust security without breaking developer productivity. Practical patterns for identity and authorization.">
+  <meta property="og:url" content="https://ssbeach.com/blog/zero-trust-without-the-pain.html">
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-03-06">
+  <meta property="article:author" content="Sunset Beach Labs">
+  <meta property="article:section" content="Security">
+  <meta property="og:site_name" content="Sunset Beach Labs">
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Zero Trust Without the Pain">
+  <meta name="twitter:description" content="Implementing zero-trust security without breaking developer productivity. Practical patterns for identity and authorization.">
+  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Zero Trust Without the Pain",
+    "description": "Implementing zero-trust security without breaking developer productivity. Practical patterns for identity and authorization.",
+    "url": "https://ssbeach.com/blog/zero-trust-without-the-pain.html",
+    "datePublished": "2026-03-06",
+    "author": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    }
+  }
+  </script>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --fg: #111;
+      --fg-muted: #888;
+      --bg: #faf9f7;
+      --accent: #c8a46e;
+      --rule: #e4e0da;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--fg);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.7;
+    }
+    article {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 400;
+      font-style: italic;
+      font-size: 2.2rem;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .meta {
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+    }
+    h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 400;
+      font-size: 1.25rem;
+      margin: 2.5rem 0 1rem;
+    }
+    p {
+      margin-bottom: 1.2rem;
+    }
+    code {
+      background: rgba(0,0,0,0.04);
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.9em;
+    }
+    pre {
+      background: #f5f3f0;
+      padding: 1.2rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+      font-size: 0.85rem;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+    a:hover {
+      border-color: var(--accent);
+    }
+    .back {
+      display: inline-block;
+      margin-top: 3rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Zero Trust Without the Pain</h1>
+      <div class="meta">March 6, 2026 · Security</div>
+    </header>
+    
+    <p>Our security team wanted zero trust. Our developers wanted to ship features. These goals seemed incompatible until we changed how we thought about security.</p>
+    
+    <p>Zero trust doesn't have to mean zero productivity. Done right, it can make development faster.</p>
+    
+    <h2>The Problem with Perimeter Security</h2>
+    
+    <p>Traditional security assumes everything inside the network is trusted. This worked when servers sat in data centers and developers worked in offices.</p>
+    
+    <p>Now developers work from coffee shops. Services run on Kubernetes clusters that change hourly. The perimeter is gone. We needed something better.</p>
+    
+    <h2>Identity Is the New Perimeter</h2>
+    
+    <p>In zero trust, every request must prove:</p>
+    
+    <pre><code>1. Who is making the request? (Identity)
+2. Are they allowed to do this? (Authorization)
+3. Is the request coming from a trusted device/location? (Context)</code></pre>
+    
+    <p>This sounds like overhead. It's actually freeing. When every request is verified, you don't need to worry about network boundaries. Developers can access production from anywhere safely.</p>
+    
+    <h2>Service-to-Service Identity</h2>
+    
+    <p>The hardest part: services need identity too. We use SPIFFE/SPIRE for workload attestation. Every pod gets a cryptographically verified identity at startup.</p>
+    
+    <pre><code>Before: Service A trusts Service B because it's on the same network
+After: Service A verifies Service B's SPIFFE ID and JWT token</code></pre>
+    
+    <p>This prevents lateral movement. If an attacker compromises one service, they can't automatically access others. Each service must authenticate independently.</p>
+    
+    <h2>Making Authorization Explicit</h2>
+    
+    <p>Most systems have implicit authorization. "Users can access their own data." This is easy to write but hard to audit and easy to get wrong.</p>
+    
+    <p>We moved to policy-as-code using Open Policy Agent:</p>
+    
+    <pre><code>package api.authz
+
+import future.keywords.if
+import future.keywords.in
+
+default allow := false
+
+allow if {
+    input.user.role == "admin"
+}
+
+allow if {
+    input.user.id == input.resource.owner_id
+    input.action in ["read", "update"]
+}</code></pre>
+    
+    <p>Policies are version controlled, tested, and reviewed like code. Authorization logic isn't hidden in middleware. It's explicit and auditable.</p>
+    
+    <h2>The Developer Experience</h2>
+    
+    <p>Security that slows developers down gets bypassed. We automated everything:</p>
+    
+    <p><strong>Local development.</strong> Developers get short-lived tokens automatically. No manual authentication steps. The CLI handles it.</p>
+    
+    <pre><code>$ ssbeach dev
+✓ Authenticated as dev@ssbeach.com
+✓ Tunnel established to production services
+✓ Local proxy running on localhost:8080</code></pre>
+    
+    <p><strong>CI/CD integration.</strong> Service accounts get identities at build time. No long-lived credentials. No secrets in environment variables.</p>
+    
+    <p><strong>IDE support.</strong> VS Code extension shows which resources the current identity can access. Developers know permissions before they run code.</p>
+    
+    <h2>Context-Aware Access</h2>
+    
+    <p>Not all access is equal. We consider context:</p>
+    
+    <pre><code>- Is the device managed?
+- Is the location expected?
+- Is the time of day unusual?
+- Is the request pattern anomalous?</code></pre>
+    
+    <p>A developer accessing production from their laptop at 2 PM gets full access. The same developer from an unknown device at 3 AM gets challenged with MFA. Same identity, different risk, different treatment.</p>
+    
+    <h2>Audit Without Anxiety</h2>
+    
+    <p>Every request is logged with:</p>
+    
+    <pre><code>- Who (identity)
+- What (action and resource)
+- When (timestamp with timezone)
+- Where (source IP, device fingerprint)
+- Why (authorization decision with policy version)</code></pre>
+    
+    <p>This isn't just for compliance. It's for debugging. When something breaks, we can trace exactly what happened and who did it.</p>
+    
+    <h2>The Migration Strategy</h2>
+    
+    <p>We didn't flip a switch. We used a sidecar pattern:</p>
+    
+    <pre><code>Legacy services → Sidecar proxy → Zero trust identity
+                ↓
+New services → Native zero trust</code></pre>
+    
+    <p>Legacy services got zero trust through a proxy. New services implemented it natively. Over 18 months, we migrated everything without downtime.</p>
+    
+    <h2>The Surprising Benefit</h2>
+    
+    <p>Zero trust didn't slow us down. It sped us up. Developers no longer need VPNs to access production. On-call engineers can debug from their phones. External contractors get limited, audited access without network access.</p>
+    
+    <p>Security became invisible. Developers think about features, not firewalls. And our security posture is stronger than ever.</p>
+    
+    <p>Trust nothing. Verify everything. Ship faster.</p>
+    
+    <a href="/index.html" class="back">← Back to Home</a>
+  </article>
+</body>
+</html>

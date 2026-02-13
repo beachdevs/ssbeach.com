@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APIs That Developers Love | Sunset Beach Labs</title>
+  <meta name="description" content="Building developer-friendly APIs requires more than good documentation. Design principles for APIs that are intuitive, consistent, and delightful to use.">
+  <meta name="keywords" content="API design, developer experience, REST API, GraphQL, API documentation, SDK design">
+  <link rel="canonical" href="https://ssbeach.com/blog/apis-that-developers-love.html">
+  
+  <meta property="og:title" content="APIs That Developers Love">
+  <meta property="og:description" content="Building developer-friendly APIs requires more than good documentation. Design principles for intuitive, consistent APIs.">
+  <meta property="og:url" content="https://ssbeach.com/blog/apis-that-developers-love.html">
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-02-27">
+  <meta property="article:author" content="Sunset Beach Labs">
+  <meta property="article:section" content="Design">
+  <meta property="og:site_name" content="Sunset Beach Labs">
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="APIs That Developers Love">
+  <meta name="twitter:description" content="Building developer-friendly APIs requires more than good documentation. Design principles for intuitive, consistent APIs.">
+  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "APIs That Developers Love",
+    "description": "Building developer-friendly APIs requires more than good documentation. Design principles for APIs that are intuitive and delightful.",
+    "url": "https://ssbeach.com/blog/apis-that-developers-love.html",
+    "datePublished": "2026-02-27",
+    "author": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    }
+  }
+  </script>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --fg: #111;
+      --fg-muted: #888;
+      --bg: #faf9f7;
+      --accent: #c8a46e;
+      --rule: #e4e0da;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--fg);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.7;
+    }
+    article {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 400;
+      font-style: italic;
+      font-size: 2.2rem;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .meta {
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+    }
+    h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 400;
+      font-size: 1.25rem;
+      margin: 2.5rem 0 1rem;
+    }
+    p {
+      margin-bottom: 1.2rem;
+    }
+    code {
+      background: rgba(0,0,0,0.04);
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.9em;
+    }
+    pre {
+      background: #f5f3f0;
+      padding: 1.2rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+      font-size: 0.85rem;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+    a:hover {
+      border-color: var(--accent);
+    }
+    .back {
+      display: inline-block;
+      margin-top: 3rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <header>
+      <h1>APIs That Developers Love</h1>
+      <div class="meta">February 27, 2026 · Design</div>
+    </header>
+    
+    <p>We rewrote our API three times. Not because the technology was wrong, but because developers hated using it. The first version was RESTful. The second was GraphQL. The third was something else entirely.</p>
+    
+    <p>The lesson: good API design isn't about following patterns. It's about removing friction.</p>
+    
+    <h2>The Principle of Least Surprise</h2>
+    
+    <p>Developers bring mental models from other APIs. Violate them at your peril.</p>
+    
+    <p>We made this mistake with pagination. Our first API used cursor-based pagination everywhere. Developers expected offset/limit. They built wrappers. They complained. Support tickets piled up.</p>
+    
+    <p>The fix wasn't technical. We added offset/limit as an alternative, even though it's less efficient. Developer happiness increased. Support tickets disappeared.</p>
+    
+    <p>Sometimes the right technical choice is the wrong product choice.</p>
+    
+    <h2>Consistency Over Correctness</h2>
+    
+    <p>Every endpoint should feel like it came from the same API. Same error formats. Same naming conventions. Same authentication.</p>
+    
+    <p>We enforce this with automated linting:</p>
+    
+    <pre><code>Rules:
+- All timestamps are ISO 8601 with timezone
+- All IDs are URL-safe base64
+- All errors use RFC 7807 Problem Details
+- All list endpoints support filtering by created_at</code></pre>
+    
+    <p>Violations fail the build. Not because they're wrong, but because inconsistency is confusing.</p>
+    
+    <h2>The First Request Matters</h2>
+    
+    <p>A developer's first API call happens within five minutes of finding your docs. If it fails, they leave.</p>
+    
+    <p>We optimize for this moment:</p>
+    
+    <p><strong>No setup required.</strong> Our sandbox API works without authentication. Rate limited, but functional. Developers can explore before committing.</p>
+    
+    <p><strong>Copy-paste examples.</strong> Every endpoint has a complete curl command. Not partial snippets. Complete commands that work when pasted into a terminal.</p>
+    
+    <p><strong>Immediate feedback.</strong> The response includes a request ID. The docs explain how to use it to debug. Developers feel supported, not abandoned.</p>
+    
+    <h2>Error Messages Are Documentation</h2>
+    
+    <p>Bad error: <code>400 Bad Request</code></p>
+    
+    <p>Good error:</p>
+    
+    <pre><code>{
+  "type": "https://api.example.com/errors/invalid-date-format",
+  "title": "Invalid date format",
+  "status": 400,
+  "detail": "Expected ISO 8601 format (YYYY-MM-DDTHH:mm:ssZ), got '2026-13-45'",
+  "instance": "/api/v1/events",
+  "invalid_params": [{
+    "name": "start_date",
+    "reason": "month must be between 1 and 12"
+  }]
+}</code></pre>
+    
+    <p>The error teaches the developer how to fix it. No need to open the docs. No need to contact support.</p>
+    
+    <h2>Versioning Without Pain</h2>
+    
+    <p>APIs change. The question is how to communicate that change.</p>
+    
+    <p>We use a hybrid approach:</p>
+    
+    <pre><code>URL: /api/v2/users
+Headers: 
+  Accept: application/vnd.api+json; version=2026-02-15
+  Sunset: 2026-06-01 (for deprecated features)</code></pre>
+    
+    <p>Breaking changes bump the URL version. Additive changes use header versioning. Deprecated features include a Sunset header with the removal date.</p>
+    
+    <p>Developers can pin to a specific version and upgrade when ready. No surprise breakages.</p>
+    
+    <h2>SDKs Are Not Optional</h2>
+    
+    <p>REST is great for tools. SDKs are great for humans. We generate official SDKs for TypeScript, Python, Go, and Rust.</p>
+    
+    <p>The SDKs aren't thin wrappers around HTTP. They're idiomatic libraries:</p>
+    
+    <pre><code>// TypeScript
+const client = new SunsetClient({ apiKey });
+const user = await client.users.create({
+  email: 'dev@example.com',
+  name: 'Developer'
+});
+
+// Rust
+let client = SunsetClient::new(api_key)?;
+let user = client.users().create()
+    .email("dev@example.com")
+    .name("Developer")
+    .send().await?;</code></pre>
+    
+    <p>Type safety. Auto-completion. Idiomatic error handling. The API becomes invisible. Developers think in their language, not HTTP.</p>
+    
+    <h2>Observability Is a Feature</h2>
+    
+    <p>Developers need to debug their integrations. We provide:</p>
+    
+    <pre><code>- Request logs in the dashboard
+- Webhook delivery status with retry history
+- OpenAPI specs that validate in real-time
+- Rate limit headers (X-RateLimit-Remaining, X-RateLimit-Reset)</code></pre>
+    
+    <p>Transparency builds trust. When something breaks, developers can see why. They're not flying blind.</p>
+    
+    <h2>The Measure of Success</h2>
+    
+    <p>We track one metric: time to first successful request. Not signups. Not API calls. Time from finding our docs to making a working request.</p>
+    
+    <p>When this number drops, we know we're doing something right. When it rises, we investigate. The goal is under five minutes. Always.</p>
+    
+    <p>Great APIs don't just work. They welcome developers in and make them want to stay.</p>
+    
+    <a href="/index.html" class="back">← Back to Home</a>
+  </article>
+</body>
+</html>

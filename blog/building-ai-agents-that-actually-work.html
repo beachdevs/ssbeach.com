@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Building AI Agents That Actually Work | Sunset Beach Labs</title>
+  <meta name="description" content="Lessons from building production LLM agents. Learn how to manage memory, design tools, and debug AI systems that work reliably at scale.">
+  <meta name="keywords" content="AI agents, LLM engineering, agent memory, tool design, AI debugging, production AI">
+  <link rel="canonical" href="https://ssbeach.com/blog/building-ai-agents-that-actually-work.html">
+  
+  <meta property="og:title" content="Building AI Agents That Actually Work">
+  <meta property="og:description" content="Lessons from building production LLM agents. Memory management, tool design, and debugging strategies for reliable AI systems.">
+  <meta property="og:url" content="https://ssbeach.com/blog/building-ai-agents-that-actually-work.html">
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-01-15">
+  <meta property="article:author" content="Sunset Beach Labs">
+  <meta property="article:section" content="Engineering">
+  <meta property="og:site_name" content="Sunset Beach Labs">
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Building AI Agents That Actually Work">
+  <meta name="twitter:description" content="Lessons from building production LLM agents. Memory management, tool design, and debugging strategies for reliable AI systems.">
+  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Building AI Agents That Actually Work",
+    "description": "Lessons from building production LLM agents. Learn how to manage memory, design tools, and debug AI systems.",
+    "url": "https://ssbeach.com/blog/building-ai-agents-that-actually-work.html",
+    "datePublished": "2026-01-15",
+    "author": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    }
+  }
+  </script>
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --text-primary: #1d1d1f;
+      --text-secondary: #86868b;
+      --text-tertiary: #6e6e73;
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #ffffff;
+      --link-blue: #0066cc;
+      --link-hover: #0077ed;
+      --border: #d2d2d7;
+      --code-bg: #f5f5f7;
+      --code-border: #d2d2d7;
+    }
+
+    html {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.47059;
+      font-weight: 400;
+      letter-spacing: -0.021em;
+      font-size: 17px;
+    }
+
+    /* Navigation */
+    nav {
+      position: sticky;
+      top: 0;
+      background: rgba(251, 251, 253, 0.8);
+      backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      z-index: 100;
+    }
+
+    .nav-content {
+      max-width: 1024px;
+      margin: 0 auto;
+      padding: 0 22px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-size: 21px;
+      font-weight: 600;
+      letter-spacing: -0.021em;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+    }
+
+    .nav-links a {
+      font-size: 12px;
+      color: var(--text-primary);
+      text-decoration: none;
+      opacity: 0.8;
+      transition: opacity 0.3s;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-links a:hover {
+      opacity: 1;
+    }
+
+    /* Article */
+    article {
+      max-width: 735px;
+      margin: 0 auto;
+      padding: 80px 22px 100px;
+      background: var(--bg-secondary);
+      min-height: calc(100vh - 48px);
+    }
+
+    header {
+      margin-bottom: 52px;
+    }
+
+    h1 {
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      line-height: 1.08349;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+
+    .meta {
+      font-size: 14px;
+      color: var(--text-tertiary);
+      letter-spacing: -0.016em;
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.021em;
+      line-height: 1.14286;
+      margin: 48px 0 16px;
+      color: var(--text-primary);
+    }
+
+    p {
+      margin-bottom: 20px;
+      font-size: 17px;
+      line-height: 1.47059;
+      letter-spacing: -0.021em;
+      color: var(--text-primary);
+    }
+
+    code {
+      background: rgba(0,0,0,0.04);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+      font-size: 0.9em;
+      color: var(--text-primary);
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-radius: 12px;
+      padding: 24px;
+      overflow-x: auto;
+      margin: 24px 0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      border-radius: 0;
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+      color: var(--text-primary);
+    }
+
+    a {
+      color: var(--link-blue);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .back {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 48px;
+      font-size: 17px;
+      color: var(--link-blue);
+      text-decoration: none;
+      letter-spacing: -0.021em;
+      font-weight: 400;
+    }
+
+    .back:hover {
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--bg-primary);
+      padding: 40px 22px;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    footer p {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      letter-spacing: -0.01em;
+      margin: 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 734px) {
+      article {
+        padding: 60px 20px 80px;
+      }
+
+      h1 {
+        font-size: 28px;
+        letter-spacing: -0.021em;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+
+      p {
+        font-size: 16px;
+      }
+
+      pre {
+        padding: 16px;
+        border-radius: 8px;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    article {
+      animation: fadeIn 0.8s ease-out forwards;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-content">
+      <a href="/" class="nav-logo">Sunset Beach</a>
+      <div class="nav-links">
+        <a href="/#writing">Writing</a>
+        <a href="/#projects">Projects</a>
+        <a href="mailto:io@ssbeach.com">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <article>
+    <header>
+      <h1>Building AI Agents That Actually Work</h1>
+      <div class="meta">January 15, 2026 · Engineering</div>
+    </header>
+    
+    <p>After building dozens of LLM-powered applications, I've noticed a pattern. Everyone starts with the same naive approach: chain together some prompts, add a few tools, and hope for the best. Then reality hits.</p>
+    
+    <p>The agent loops forever. It hallucinates tool calls. It forgets what it was doing three steps ago. And debugging it feels like watching a toddler play chess — sometimes brilliant, often nonsensical.</p>
+    
+    <h2>Why Most Agents Fail</h2>
+    
+    <p>Most failures come from one fundamental misunderstanding: LLMs are stateless. Every inference is a fresh start. Yet we build agents that implicitly assume they'll "remember" the conversation history without explicitly managing it.</p>
+    
+    <p>Here's the key insight: treat your agent like a distributed system. It has:</p>
+    
+    <pre><code>- A control plane (the orchestration logic)
+- Data planes (memory, tools, external APIs)
+- Clear boundaries between them</code></pre>
+    
+    <h2>The Memory Problem</h2>
+    
+    <p>I used to pass the entire conversation history to every model call. It worked until context windows filled up, costs ballooned, and older information got buried under newer tokens.</p>
+    
+    <p>Now I use a tiered approach:</p>
+    
+    <pre><code>1. Working memory (last 10 turns)
+2. Summarized memory (key facts, decisions)
+3. Vector store (semantic retrieval)
+4. Structured database (persistent state)</code></pre>
+    
+    <p>The agent decides what to remember and where. This isn't just engineering overhead — it makes the system more predictable.</p>
+    
+    <h2>Tool Design Matters</h2>
+    
+    <p>Your agent is only as good as its tools. I follow two rules:</p>
+    
+    <p><strong>Be specific.</strong> Instead of "search_files", use "find_recent_errors_in_logs". The more constrained the tool, the less room for hallucination.</p>
+    
+    <p><strong>Fail fast.</strong> Tools should validate inputs and return clear errors, not silently guess. The agent can handle explicit failures better than subtle bugs.</p>
+    
+    <h2>The Debugging Imperative</h2>
+    
+    <p>The hardest part of agent development isn't making it work — it's understanding why it failed. Every agent framework I build now includes:</p>
+    
+    <pre><code>- Complete traces of every decision
+- Token usage per step
+- Tool call latency
+- State transitions visualized</code></pre>
+    
+    <p>Without this, you're flying blind. With it, you can iterate fast.</p>
+    
+    <h2>Where We're Heading</h2>
+    
+    <p>The next generation of agents won't be monolithic. They'll be compositions of smaller, verifiable units — microservices for reasoning. Each unit has clear inputs, outputs, and failure modes.</p>
+    
+    <p>We're building this at Sunset Beach. Not because it's elegant, but because it's the only way to ship reliable AI at scale.</p>
+    
+    <a href="/" class="back">← Back to Home</a>
+  </article>
+
+  <footer>
+    <p>&copy; 2026 Sunset Beach Inference Labs. All rights reserved.</p>
+  </footer>
+</body>
+</html>

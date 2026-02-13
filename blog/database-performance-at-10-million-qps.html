@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Database Performance at 10 Million QPS | Sunset Beach Labs</title>
+  <meta name="description" content="How we scaled our database to handle 10 million queries per second. Lessons on query optimization, connection pooling, and distributed caching.">
+  <meta name="keywords" content="database performance, query optimization, connection pooling, distributed systems, caching, PostgreSQL">
+  <link rel="canonical" href="https://ssbeach.com/blog/database-performance-at-10-million-qps.html">
+  
+  <meta property="og:title" content="Database Performance at 10 Million QPS">
+  <meta property="og:description" content="How we scaled our database to handle 10 million queries per second. Lessons on optimization and distributed caching.">
+  <meta property="og:url" content="https://ssbeach.com/blog/database-performance-at-10-million-qps.html">
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-02-20">
+  <meta property="article:author" content="Sunset Beach Labs">
+  <meta property="article:section" content="Performance">
+  <meta property="og:site_name" content="Sunset Beach Labs">
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Database Performance at 10 Million QPS">
+  <meta name="twitter:description" content="How we scaled our database to handle 10 million queries per second. Lessons on optimization and distributed caching.">
+  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Database Performance at 10 Million QPS",
+    "description": "How we scaled our database to handle 10 million queries per second. Lessons on query optimization and distributed caching.",
+    "url": "https://ssbeach.com/blog/database-performance-at-10-million-qps.html",
+    "datePublished": "2026-02-20",
+    "author": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    }
+  }
+  </script>
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --text-primary: #1d1d1f;
+      --text-secondary: #86868b;
+      --text-tertiary: #6e6e73;
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #ffffff;
+      --link-blue: #0066cc;
+      --link-hover: #0077ed;
+      --border: #d2d2d7;
+      --code-bg: #f5f5f7;
+      --code-border: #d2d2d7;
+    }
+
+    html {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.47059;
+      font-weight: 400;
+      letter-spacing: -0.021em;
+      font-size: 17px;
+    }
+
+    /* Navigation */
+    nav {
+      position: sticky;
+      top: 0;
+      background: rgba(251, 251, 253, 0.8);
+      backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      z-index: 100;
+    }
+
+    .nav-content {
+      max-width: 1024px;
+      margin: 0 auto;
+      padding: 0 22px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-size: 21px;
+      font-weight: 600;
+      letter-spacing: -0.021em;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+    }
+
+    .nav-links a {
+      font-size: 12px;
+      color: var(--text-primary);
+      text-decoration: none;
+      opacity: 0.8;
+      transition: opacity 0.3s;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-links a:hover {
+      opacity: 1;
+    }
+
+    /* Article */
+    article {
+      max-width: 735px;
+      margin: 0 auto;
+      padding: 80px 22px 100px;
+      background: var(--bg-secondary);
+      min-height: calc(100vh - 48px);
+    }
+
+    header {
+      margin-bottom: 52px;
+    }
+
+    h1 {
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      line-height: 1.08349;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+
+    .meta {
+      font-size: 14px;
+      color: var(--text-tertiary);
+      letter-spacing: -0.016em;
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.021em;
+      line-height: 1.14286;
+      margin: 48px 0 16px;
+      color: var(--text-primary);
+    }
+
+    p {
+      margin-bottom: 20px;
+      font-size: 17px;
+      line-height: 1.47059;
+      letter-spacing: -0.021em;
+      color: var(--text-primary);
+    }
+
+    code {
+      background: rgba(0,0,0,0.04);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+      font-size: 0.9em;
+      color: var(--text-primary);
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-radius: 12px;
+      padding: 24px;
+      overflow-x: auto;
+      margin: 24px 0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      border-radius: 0;
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+      color: var(--text-primary);
+    }
+
+    a {
+      color: var(--link-blue);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .back {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 48px;
+      font-size: 17px;
+      color: var(--link-blue);
+      text-decoration: none;
+      letter-spacing: -0.021em;
+      font-weight: 400;
+    }
+
+    .back:hover {
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--bg-primary);
+      padding: 40px 22px;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    footer p {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      letter-spacing: -0.01em;
+      margin: 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 734px) {
+      article {
+        padding: 60px 20px 80px;
+      }
+
+      h1 {
+        font-size: 28px;
+        letter-spacing: -0.021em;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+
+      p {
+        font-size: 16px;
+      }
+
+      pre {
+        padding: 16px;
+        border-radius: 8px;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    article {
+      animation: fadeIn 0.8s ease-out forwards;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-content">
+      <a href="/" class="nav-logo">Sunset Beach</a>
+      <div class="nav-links">
+        <a href="/#writing">Writing</a>
+        <a href="/#projects">Projects</a>
+        <a href="mailto:io@ssbeach.com">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <article>
+    <header>
+      <h1>Database Performance at 10 Million QPS</h1>
+      <div class="meta">February 20, 2026 · Performance</div>
+    </header>
+    
+    <p>Last Tuesday at 3:47 AM, our database hit 10 million queries per second. Not a spike. Not a benchmark. Sustained production traffic. And latency stayed under 2 milliseconds.</p>
+    
+    <p>This wasn't luck. It was the result of eighteen months of systematic optimization. Most of which we got wrong the first time.</p>
+    
+    <h2>The Connection Pool Trap</h2>
+    
+    <p>Everyone knows about connection pooling. Few people understand it. Our first attempt at scale: 500 application servers, each with 20 connections. That's 10,000 connections to a single database.</p>
+    
+    <p>The database didn't crash. It just got slow. Context switches became the bottleneck. The kernel spent more time scheduling than processing queries.</p>
+    
+    <p>The fix: a two-tier pool. Application servers connect to PgBouncer. PgBouncer maintains a smaller pool to PostgreSQL. The result?</p>
+    
+    <pre><code>Application Servers (500)
+    ↓
+PgBouncer Pool (100 connections total)
+    ↓
+PostgreSQL (max_connections = 200)</code></pre>
+    
+    <p>Total active connections dropped from 10,000 to 200. CPU usage fell 60%.</p>
+    
+    <h2>Query Planning Is Everything</h2>
+    
+    <p>We found queries that took 50ms with the wrong plan and 0.1ms with the right one. The optimizer was guessing wrong because statistics were stale.</p>
+    
+    <p>Our solution combines three approaches:</p>
+    
+    <p><strong>Partial indexes for hot paths.</strong> Instead of indexing the entire table, index only the data that matters for your most common queries.</p>
+    
+    <pre><code>CREATE INDEX idx_active_users_recent 
+ON users(last_login) 
+WHERE status = 'active' AND created_at > '2025-01-01';</code></pre>
+    
+    <p>This index is 5% the size of a full index. It fits in RAM. Queries that use it are 20x faster.</p>
+    
+    <p><strong>Prepared statements with plan hints.</strong> For critical queries, we force specific plans. Controversial, but necessary when the optimizer consistently gets it wrong.</p>
+    
+    <p><strong>Continuous statistics refresh.</strong> We run ANALYZE on frequently-changing tables every hour, not the default every day. The overhead is negligible. The benefit is massive.</p>
+    
+    <h2>The Caching Strategy</h2>
+    
+    <p>At this scale, caching isn't optional. But cache invalidation is hard. We use a hybrid approach:</p>
+    
+    <pre><code>Layer 1: Application cache (Redis) - 1 second TTL
+Layer 2: CDN edge cache - 60 second TTL
+Layer 3: Database result cache - 5 minute TTL</code></pre>
+    
+    <p>The key insight: different data has different freshness requirements. User profiles can be stale for minutes. Real-time notifications cannot.</p>
+    
+    <p>We tag cache entries by data type. Invalidation becomes targeted. When a user updates their profile, we invalidate only that user's cache entries across all layers. Not the entire cache.</p>
+    
+    <h2>Read Replicas Done Right</h2>
+    
+    <p>We run 15 read replicas. But the challenge isn't replication lag—it's query routing. Applications need to know which queries can go to replicas and which need the primary.</p>
+    
+    <p>Our middleware inspects each query:</p>
+    
+    <pre><code>SELECT → Replica (if no FOR UPDATE)
+INSERT/UPDATE/DELETE → Primary
+SELECT FOR UPDATE → Primary</code></pre>
+    
+    <p>We also track replication lag per replica. If lag exceeds 100ms, that replica is temporarily removed from rotation. Clients retry on another replica.</p>
+    
+    <h2>Monitoring That Matters</h2>
+    
+    <p>Traditional database monitoring tells you CPU, memory, and disk. Useful, but not actionable. We track:</p>
+    
+    <pre><code>- Query latency by percentile (p50, p99, p99.9)
+- Lock wait time
+- Checkpoint frequency
+- Vacuum progress
+- Cache hit ratio by table</code></pre>
+    
+    <p>These metrics predict problems before they become outages. Last month, rising lock wait times alerted us to a missing index before users noticed slowdowns.</p>
+    
+    <h2>The Real Lesson</h2>
+    
+    <p>Performance isn't a feature you add later. It's a constraint you design around from day one. Every schema decision, every query pattern, every caching strategy compounds.</p>
+    
+    <p>We started with a database that struggled at 1,000 QPS. Now we handle 10,000x that. The hardware didn't change. The thinking did.</p>
+    
+    <a href="/" class="back">← Back to Home</a>
+  </article>
+
+  <footer>
+    <p>&copy; 2026 Sunset Beach Inference Labs. All rights reserved.</p>
+  </footer>
+</body>
+</html>

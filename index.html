@@ -4,195 +4,401 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sunset Beach Labs</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <meta name="description" content="Sunset Beach Labs builds reliable AI agents, infrastructure automation, and high-performance systems.">
+  <link rel="canonical" href="https://ssbeach.com/">
+  <link rel="sitemap" type="application/xml" href="/sitemap.xml">
+  
+  <meta property="og:title" content="Sunset Beach Labs">
+  <meta property="og:description" content="Building reliable AI agents and infrastructure.">
+  <meta property="og:url" content="https://ssbeach.com/">
+  <meta property="og:type" content="website">
+  
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --fg: #111;
-      --fg-muted: #888;
-      --bg: #faf9f7;
-      --accent: #c8a46e;
-      --rule: #e4e0da;
+      --text-primary: #1d1d1f;
+      --text-secondary: #86868b;
+      --text-tertiary: #6e6e73;
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #ffffff;
+      --link-blue: #0066cc;
+      --link-hover: #0077ed;
+      --border: #d2d2d7;
+    }
+
+    @font-face {
+      font-family: 'SF Pro Display';
+      src: local('.SFNSDisplay'), local('SF Pro Display'), local('Helvetica Neue'), local('Helvetica'), local('Arial');
+      font-weight: 400 700;
+    }
+
+    @font-face {
+      font-family: 'SF Pro Text';
+      src: local('.SFNSText'), local('SF Pro Text'), local('Helvetica Neue'), local('Helvetica'), local('Arial');
+      font-weight: 400 600;
+    }
+
+    html {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      font-weight: 300;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      background: var(--bg);
-      color: var(--fg);
-      -webkit-font-smoothing: antialiased;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.47059;
+      font-weight: 400;
+      letter-spacing: -0.022em;
     }
 
-    /* --- header --- */
-    header {
+    /* Navigation */
+    nav {
+      position: sticky;
+      top: 0;
+      background: rgba(251, 251, 253, 0.8);
+      backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      z-index: 100;
+    }
+
+    .nav-content {
+      max-width: 1024px;
+      margin: 0 auto;
+      padding: 0 22px;
+      height: 48px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 2rem 3rem;
-      font-size: 0.7rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
     }
-    .status {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--fg-muted);
-      font-size: 0.65rem;
-    }
-    .status-dot {
-      width: 6px; height: 6px;
-      background: var(--accent);
-      border-radius: 50%;
-    }
-    header a {
-      color: var(--fg);
+
+    .nav-logo {
+      font-size: 21px;
+      font-weight: 600;
+      letter-spacing: -0.021em;
+      color: var(--text-primary);
       text-decoration: none;
-      opacity: 0.55;
-      transition: opacity 0.3s;
     }
-    header a:hover { opacity: 1; }
 
-    /* --- main --- */
-    main {
-      flex: 1;
+    .nav-links {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem 2rem 4rem;
+      gap: 28px;
     }
 
-    .hero { text-align: center; max-width: 540px; }
+    .nav-links a {
+      font-size: 12px;
+      color: var(--text-primary);
+      text-decoration: none;
+      opacity: 0.8;
+      transition: opacity 0.3s;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-links a:hover {
+      opacity: 1;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 120px 20px 80px;
+      background: var(--bg-secondary);
+    }
 
     .hero h1 {
-      font-family: 'Playfair Display', Georgia, serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+      font-size: 80px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      line-height: 1.05;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #1d1d1f 0%, #434344 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 28px;
       font-weight: 400;
-      font-style: italic;
-      font-size: clamp(2.4rem, 7vw, 4.2rem);
-      letter-spacing: 0.02em;
-      line-height: 1.15;
-      color: var(--fg);
+      letter-spacing: -0.021em;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto 40px;
+      line-height: 1.28577;
     }
 
-    .rule {
-      width: 48px;
-      height: 1px;
-      background: var(--accent);
-      margin: 2rem auto;
+    .hero-meta {
+      font-size: 17px;
+      color: var(--text-tertiary);
+      letter-spacing: -0.021em;
     }
 
-    .projects-label {
-      font-size: 0.6rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--fg-muted);
-      margin-bottom: 1.4rem;
+    /* Content Sections */
+    .section {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 100px 22px;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .section-header h2 {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      font-size: 48px;
+      font-weight: 600;
+      letter-spacing: -0.003em;
+      margin-bottom: 16px;
+    }
+
+    .section-header p {
+      font-size: 21px;
+      color: var(--text-secondary);
+      letter-spacing: -0.021em;
+    }
+
+    /* Blog Grid */
+    .blog-grid {
+      display: grid;
+      gap: 20px;
+    }
+
+    .blog-card {
+      background: var(--bg-secondary);
+      border-radius: 18px;
+      padding: 32px;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: block;
+    }
+
+    .blog-card:hover {
+      transform: scale(1.01);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .blog-card h3 {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.021em;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    .blog-card .meta {
+      font-size: 14px;
+      color: var(--text-tertiary);
+      margin-bottom: 12px;
+      letter-spacing: -0.016em;
+    }
+
+    .blog-card .excerpt {
+      font-size: 17px;
+      color: var(--text-secondary);
+      line-height: 1.47059;
+      letter-spacing: -0.021em;
+    }
+
+    /* Projects Section */
+    .projects-section {
+      background: var(--bg-secondary);
+      padding: 100px 22px;
+    }
+
+    .projects-container {
+      max-width: 980px;
+      margin: 0 auto;
     }
 
     #repos {
+      display: grid;
+      gap: 16px;
+    }
+
+    .repo-link {
       display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-    }
-
-    #repos a {
-      color: var(--fg);
-      text-decoration: none;
-      font-size: 0.95rem;
-      letter-spacing: 0.04em;
-      padding: 0.6rem 1.4rem;
-      border: 1px solid transparent;
-      border-radius: 4px;
-      transition: border-color 0.3s, background 0.3s;
-      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-    }
-    #repos a:hover {
-      border-color: var(--rule);
-      background: rgba(255,255,255,0.6);
-    }
-
-    .github-link {
-      margin-top: 2.2rem;
-      display: inline-block;
-    }
-    .github-link a {
-      color: var(--fg-muted);
+      justify-content: space-between;
+      padding: 24px 32px;
+      background: var(--bg-primary);
+      border-radius: 14px;
       text-decoration: none;
-      font-size: 0.72rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      border-bottom: 1px solid var(--rule);
-      padding-bottom: 2px;
-      transition: color 0.3s, border-color 0.3s;
-    }
-    .github-link a:hover {
-      color: var(--fg);
-      border-color: var(--accent);
+      color: var(--text-primary);
+      transition: background 0.3s;
     }
 
-    /* --- footer --- */
-    footer {
-      padding: 2rem 3rem;
+    .repo-link:hover {
+      background: #e8e8ed;
+    }
+
+    .repo-name {
+      font-size: 19px;
+      font-weight: 600;
+      letter-spacing: -0.021em;
+    }
+
+    .repo-arrow {
+      color: var(--link-blue);
+      font-size: 21px;
+    }
+
+    /* GitHub Link */
+    .github-cta {
       text-align: center;
-      font-size: 0.6rem;
-      letter-spacing: 0.1em;
-      color: var(--fg-muted);
-      text-transform: uppercase;
+      margin-top: 48px;
     }
 
-    /* --- fade-in --- */
-    .fade-in {
-      opacity: 0;
-      transform: translateY(12px);
-      animation: fadeUp 0.8s ease forwards;
+    .github-cta a {
+      color: var(--link-blue);
+      text-decoration: none;
+      font-size: 19px;
+      letter-spacing: -0.021em;
     }
-    .fade-in:nth-child(2) { animation-delay: 0.15s; }
-    .fade-in:nth-child(3) { animation-delay: 0.3s; }
-    .fade-in:nth-child(4) { animation-delay: 0.45s; }
-    @keyframes fadeUp {
+
+    .github-cta a:hover {
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--bg-primary);
+      padding: 40px 22px;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    footer p {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      letter-spacing: -0.01em;
+    }
+
+    /* Responsive */
+    @media (max-width: 734px) {
+      .hero h1 {
+        font-size: 48px;
+      }
+      
+      .hero p {
+        font-size: 21px;
+      }
+      
+      .section-header h2 {
+        font-size: 32px;
+      }
+      
+      .blog-card {
+        padding: 24px;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    @media (max-width: 600px) {
-      header, footer { padding: 1.5rem 1.5rem; }
-      main { padding: 1rem 1.5rem 3rem; }
+    .animate-in {
+      animation: fadeIn 1s ease-out forwards;
+      opacity: 0;
     }
+
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
   </style>
 </head>
 <body>
-  <header>
-    <div class="status">
-      <span class="status-dot"></span>
-      <span>Active</span>
-    </div>
-    <a href="mailto:io@ssbeach.com">Contact</a>
-  </header>
-
-  <main>
-    <section class="hero">
-      <h1 class="fade-in">Sunset Beach</h1>
-      <div class="rule fade-in"></div>
-      <div class="fade-in">
-        <p class="projects-label">Projects</p>
-        <div id="repos"></div>
-        <div class="github-link">
-          <a href="https://github.com/beachdevs" target="_blank">github.com/beachdevs</a>
-        </div>
+  <nav>
+    <div class="nav-content">
+      <a href="/" class="nav-logo">Sunset Beach</a>
+      <div class="nav-links">
+        <a href="#writing">Writing</a>
+        <a href="#projects">Projects</a>
+        <a href="mailto:io@ssbeach.com">Contact</a>
       </div>
-    </section>
-  </main>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <h1 class="animate-in">Sunset Beach Labs</h1>
+    <p class="animate-in delay-1">Building reliable AI agents, infrastructure automation, and high-performance systems.</p>
+    <p class="hero-meta animate-in delay-2">Engineering insights on LLMs, Rust, WebAssembly, and cloud infrastructure.</p>
+  </section>
+
+  <section class="section" id="writing">
+    <div class="section-header">
+      <h2>Writing</h2>
+      <p>Thoughts on engineering, architecture, and building systems that scale.</p>
+    </div>
+    
+    <div class="blog-grid">
+      <a href="blog/building-ai-agents-that-actually-work.html" class="blog-card animate-in delay-1">
+        <h3>Building AI Agents That Actually Work</h3>
+        <div class="meta">January 15, 2026 · Engineering</div>
+        <div class="excerpt">Lessons from building production LLM agents. Learn how to manage memory, design tools, and debug AI systems that work reliably at scale.</div>
+      </a>
+
+      <a href="blog/the-end-of-config-hell.html" class="blog-card animate-in delay-2">
+        <h3>The End of Config Hell</h3>
+        <div class="meta">January 28, 2026 · Infrastructure</div>
+        <div class="excerpt">Moving beyond YAML to proper infrastructure abstractions. How we reduced 47,000 lines of config to 400 lines of code.</div>
+      </a>
+
+      <a href="blog/why-rust-is-eating-webassembly.html" class="blog-card animate-in delay-3">
+        <h3>Why Rust Is Eating WebAssembly</h3>
+        <div class="meta">February 12, 2026 · Systems</div>
+        <div class="excerpt">Real-world performance wins with Rust and WebAssembly. How we built a 180KB browser app that processes 10GB of data without stalling the UI.</div>
+      </a>
+
+      <a href="blog/database-performance-at-10-million-qps.html" class="blog-card animate-in">
+        <h3>Database Performance at 10 Million QPS</h3>
+        <div class="meta">February 20, 2026 · Performance</div>
+        <div class="excerpt">How we scaled our database to handle 10 million queries per second. Lessons on query optimization, connection pooling, and distributed caching.</div>
+      </a>
+
+      <a href="blog/apis-that-developers-love.html" class="blog-card animate-in">
+        <h3>APIs That Developers Love</h3>
+        <div class="meta">February 27, 2026 · Design</div>
+        <div class="excerpt">Building developer-friendly APIs requires more than good documentation. Design principles for APIs that are intuitive, consistent, and delightful to use.</div>
+      </a>
+
+      <a href="blog/zero-trust-without-the-pain.html" class="blog-card animate-in">
+        <h3>Zero Trust Without the Pain</h3>
+        <div class="meta">March 6, 2026 · Security</div>
+        <div class="excerpt">Implementing zero-trust security without breaking developer productivity. Practical patterns for identity, authorization, and network segmentation.</div>
+      </a>
+
+      <a href="blog/observability-for-systems-that-cant-fail.html" class="blog-card animate-in">
+        <h3>Observability for Systems That Can't Fail</h3>
+        <div class="meta">March 13, 2026 · Reliability</div>
+        <div class="excerpt">Building observability systems that tell you why things break, not just when. Structured logging, distributed tracing, and intelligent alerting.</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="projects-section" id="projects">
+    <div class="projects-container">
+      <div class="section-header">
+        <h2>Open Source</h2>
+        <p>Tools and libraries we're building in public.</p>
+      </div>
+      
+      <div id="repos"></div>
+      
+      <div class="github-cta">
+        <a href="https://github.com/beachdevs" target="_blank">View all projects on GitHub →</a>
+      </div>
+    </div>
+  </section>
 
   <footer>
-    &copy; 2026 Sunset Beach Inference Labs
+    <p>&copy; 2026 Sunset Beach Inference Labs. All rights reserved.</p>
   </footer>
 
   <script>
@@ -202,7 +408,12 @@
         const repos = await res.json();
         document.getElementById('repos').innerHTML = repos
           .filter(r => r.name !== 'ssbeach.com')
-          .map(r => `<a href="${r.html_url}" target="_blank">${r.name}</a>`)
+          .map(r => `
+            <a href="${r.html_url}" target="_blank" class="repo-link">
+              <span class="repo-name">${r.name}</span>
+              <span class="repo-arrow">→</span>
+            </a>
+          `)
           .join('');
       } catch (e) {
         console.error('Error fetching repos:', e);

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Why Rust Is Eating WebAssembly | Sunset Beach Labs</title>
+  <meta name="description" content="Real-world performance wins with Rust and WebAssembly. How we built a 180KB browser app that processes 10GB of data without stalling the UI.">
+  <meta name="keywords" content="Rust, WebAssembly, WASM, browser performance, systems programming, edge computing">
+  <link rel="canonical" href="https://ssbeach.com/blog/why-rust-is-eating-webassembly.html">
+  
+  <meta property="og:title" content="Why Rust Is Eating WebAssembly">
+  <meta property="og:description" content="Real-world performance wins with Rust and WebAssembly. Building fast, reliable browser applications.">
+  <meta property="og:url" content="https://ssbeach.com/blog/why-rust-is-eating-webassembly.html">
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-02-12">
+  <meta property="article:author" content="Sunset Beach Labs">
+  <meta property="article:section" content="Systems">
+  <meta property="og:site_name" content="Sunset Beach Labs">
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Why Rust Is Eating WebAssembly">
+  <meta name="twitter:description" content="Real-world performance wins with Rust and WebAssembly. Building fast, reliable browser applications.">
+  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Why Rust Is Eating WebAssembly",
+    "description": "Real-world performance wins with Rust and WebAssembly. How we built a 180KB browser app that processes 10GB of data.",
+    "url": "https://ssbeach.com/blog/why-rust-is-eating-webassembly.html",
+    "datePublished": "2026-02-12",
+    "author": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    }
+  }
+  </script>
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --text-primary: #1d1d1f;
+      --text-secondary: #86868b;
+      --text-tertiary: #6e6e73;
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #ffffff;
+      --link-blue: #0066cc;
+      --link-hover: #0077ed;
+      --border: #d2d2d7;
+      --code-bg: #f5f5f7;
+      --code-border: #d2d2d7;
+    }
+
+    html {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.47059;
+      font-weight: 400;
+      letter-spacing: -0.021em;
+      font-size: 17px;
+    }
+
+    /* Navigation */
+    nav {
+      position: sticky;
+      top: 0;
+      background: rgba(251, 251, 253, 0.8);
+      backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      z-index: 100;
+    }
+
+    .nav-content {
+      max-width: 1024px;
+      margin: 0 auto;
+      padding: 0 22px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-size: 21px;
+      font-weight: 600;
+      letter-spacing: -0.021em;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+    }
+
+    .nav-links a {
+      font-size: 12px;
+      color: var(--text-primary);
+      text-decoration: none;
+      opacity: 0.8;
+      transition: opacity 0.3s;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-links a:hover {
+      opacity: 1;
+    }
+
+    /* Article */
+    article {
+      max-width: 735px;
+      margin: 0 auto;
+      padding: 80px 22px 100px;
+      background: var(--bg-secondary);
+      min-height: calc(100vh - 48px);
+    }
+
+    header {
+      margin-bottom: 52px;
+    }
+
+    h1 {
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      line-height: 1.08349;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+
+    .meta {
+      font-size: 14px;
+      color: var(--text-tertiary);
+      letter-spacing: -0.016em;
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.021em;
+      line-height: 1.14286;
+      margin: 48px 0 16px;
+      color: var(--text-primary);
+    }
+
+    p {
+      margin-bottom: 20px;
+      font-size: 17px;
+      line-height: 1.47059;
+      letter-spacing: -0.021em;
+      color: var(--text-primary);
+    }
+
+    code {
+      background: rgba(0,0,0,0.04);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+      font-size: 0.9em;
+      color: var(--text-primary);
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-radius: 12px;
+      padding: 24px;
+      overflow-x: auto;
+      margin: 24px 0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      border-radius: 0;
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+      color: var(--text-primary);
+    }
+
+    a {
+      color: var(--link-blue);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .back {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 48px;
+      font-size: 17px;
+      color: var(--link-blue);
+      text-decoration: none;
+      letter-spacing: -0.021em;
+      font-weight: 400;
+    }
+
+    .back:hover {
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--bg-primary);
+      padding: 40px 22px;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    footer p {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      letter-spacing: -0.01em;
+      margin: 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 734px) {
+      article {
+        padding: 60px 20px 80px;
+      }
+
+      h1 {
+        font-size: 28px;
+        letter-spacing: -0.021em;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+
+      p {
+        font-size: 16px;
+      }
+
+      pre {
+        padding: 16px;
+        border-radius: 8px;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    article {
+      animation: fadeIn 0.8s ease-out forwards;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-content">
+      <a href="/" class="nav-logo">Sunset Beach</a>
+      <div class="nav-links">
+        <a href="/#writing">Writing</a>
+        <a href="/#projects">Projects</a>
+        <a href="mailto:io@ssbeach.com">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <article>
+    <header>
+      <h1>Why Rust Is Eating WebAssembly</h1>
+      <div class="meta">February 12, 2026 · Systems</div>
+    </header>
+    
+    <p>Last week, we shipped a critical data processing pipeline. It runs entirely in the browser, processes 10GB of data without stalling the UI, and weighs 180KB. It took two days to build.</p>
+    
+    <p>The secret? Rust compiled to WebAssembly, with just enough JavaScript glue to talk to the DOM. This isn't a toy demo — it's running in production, handling real customer workloads.</p>
+    
+    <h2>The Browser Is Now a Real Runtime</h2>
+    
+    <p>For years, we accepted that browsers were for JavaScript. Everything else was a compromise. TypeScript helped, but it's still JavaScript under the hood. The performance ceiling was real.</p>
+    
+    <p>WebAssembly changed the game. But more importantly, Rust changed how we think about targeting the web.</p>
+    
+    <p>Here's why this combination works:</p>
+    
+    <pre><code>- Zero-cost abstractions actually mean zero cost
+- No garbage collection means predictable performance
+- The borrow checker catches data races before they ship
+- The ecosystem (wasm-bindgen, trunk, yew) is mature</code></pre>
+    
+    <h2>A Real Example</h2>
+    
+    <p>We needed to parse PDFs client-side. The JavaScript library we tried was 2MB and took 4 seconds to process a document. The Rust replacement is 150KB and processes the same PDF in 200ms.</p>
+    
+    <p>The code is surprisingly readable:</p>
+    
+    <pre><code>#[wasm_bindgen]
+pub fn extract_text(data: &[u8]) -> Result<String, JsValue> {
+    let doc = Document::load_from(data)?;
+    let mut output = String::new();
+    
+    for page in doc.pages() {
+        for text in page.text_objects() {
+            output.push_str(&text.content);
+        }
+    }
+    
+    Ok(output)
+}</code></pre>
+    
+    <p>That's it. No async/await complexity. No memory leaks. It just works.</p>
+    
+    <h2>The Development Experience</h2>
+    
+    <p>I'll be honest: Rust has a learning curve. But it's a different kind of curve than JavaScript's. With JavaScript, you pay the cost at runtime. With Rust, you pay it at compile time.</p>
+    
+    <p>Here's what surprised me most:</p>
+    
+    <p><strong>Hot reloading works.</strong> Using trunk, changes compile in under a second. The feedback loop feels faster than JavaScript bundlers for small projects.</p>
+    
+    <p><strong>Debugging isn't bad.</strong> Source maps work. You can set breakpoints in Rust code and step through it in Chrome DevTools. It feels native.</p>
+    
+    <p><strong>The bundle size is tiny.</strong> Our entire application, including a custom PDF renderer, is smaller than React alone.</p>
+    
+    <h2>When Not To Use It</h2>
+    
+    <p>Rust isn't always the answer. If you're building a content site, stick with static HTML. If you need rapid prototyping, JavaScript's dynamic nature shines. The FFI boundary adds complexity you might not need.</p>
+    
+    <p>But for compute-heavy tasks? For applications where every millisecond matters? For code that needs to run reliably without memory leaks? Rust + WASM is now my default.</p>
+    
+    <h2>The Broader Implications</h2>
+    
+    <p>This isn't just about browsers. The same WASM modules run in edge functions, embedded devices, and serverless environments. Write once, run anywhere finally feels true.</p>
+    
+    <p>At Sunset Beach, we're betting on this stack. Our next product is entirely Rust + WASM, from the edge to the browser. The development velocity is higher, not lower. The bugs are fewer. And our users notice the difference.</p>
+    
+    <p>The future of web development isn't JavaScript vs. Rust. It's choosing the right tool for each boundary. And increasingly, that boundary is WebAssembly.</p>
+    
+    <a href="/" class="back">← Back to Home</a>
+  </article>
+
+  <footer>
+    <p>&copy; 2026 Sunset Beach Inference Labs. All rights reserved.</p>
+  </footer>
+</body>
+</html>
