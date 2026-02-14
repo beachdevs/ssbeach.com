@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chris Borkert - bio</title>
+  <meta name="description" content="Chris Borkert - Senior Technical Consultant with 19+ years experience building back office systems for the world's largest companies.">
+  <link rel="canonical" href="https://ssbeach.com/bio.html">
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --text-primary: #1d1d1f;
+      --text-secondary: #86868b;
+      --text-tertiary: #6e6e73;
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #ffffff;
+      --link-blue: #0066cc;
+      --link-hover: #0077ed;
+      --border: #d2d2d7;
+      --accent: #c8a46e;
+    }
+
+    html {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* Navigation */
+    nav {
+      position: sticky;
+      top: 0;
+      background: rgba(251, 251, 253, 0.8);
+      backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      z-index: 100;
+    }
+
+    .nav-content {
+      max-width: 1024px;
+      margin: 0 auto;
+      padding: 0 22px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-size: 21px;
+      font-weight: 600;
+      letter-spacing: -0.021em;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+    }
+
+    .nav-links a {
+      font-size: 12px;
+      color: var(--text-primary);
+      text-decoration: none;
+      opacity: 0.8;
+      transition: opacity 0.3s;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-links a:hover {
+      opacity: 1;
+    }
+
+    /* Hero */
+    .hero {
+      background: var(--bg-secondary);
+      padding: 80px 22px 60px;
+    }
+
+    .hero-content {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      align-items: flex-start;
+      gap: 48px;
+    }
+
+    .hero-left {
+      flex-shrink: 0;
+      text-align: center;
+    }
+
+    .avatar {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      display: block;
+      object-fit: cover;
+      border: 3px solid var(--border);
+    }
+
+    .hero h1 {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      margin-bottom: 4px;
+      color: var(--text-primary);
+    }
+
+    .hero .tagline {
+      font-size: 17px;
+      color: var(--text-secondary);
+      letter-spacing: -0.021em;
+      margin-bottom: 8px;
+    }
+
+    .hero .location {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .hero-right {
+      flex: 1;
+    }
+
+    .hero-right h2 {
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+
+    .hero-right p {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+
+    .hero-right p:last-child {
+      margin-bottom: 0;
+    }
+
+    .hero-right .education-item {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-top: 12px;
+    }
+
+    .hero-right .education-item h3 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--text-primary);
+    }
+
+    .hero-right .education-item .school {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .hero-right .education-details {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+
+    section {
+      margin-bottom: 48px;
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.021em;
+      margin-bottom: 20px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-icon {
+      font-size: 20px;
+    }
+
+    p {
+      font-size: 17px;
+      line-height: 1.6;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+    }
+
+    /* Experience Cards */
+    .experience-card {
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .experience-card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--text-primary);
+    }
+
+    .experience-card .company {
+      font-size: 15px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .experience-card .meta {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      margin-bottom: 12px;
+    }
+
+    .experience-card p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      margin-bottom: 0;
+    }
+
+    /* Education */
+    .education-item {
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      padding: 20px 24px;
+      border: 1px solid var(--border);
+    }
+
+    .education-item h3 {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .education-item .school {
+      font-size: 15px;
+      color: var(--text-secondary);
+    }
+
+    /* Company Logos */
+    .company-logos {
+      display: flex;
+      gap: 16px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .logo-item {
+      background: linear-gradient(135deg, #1d1d1f 0%, #434344 100%);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    /* School Logo */
+    .school-logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-right: 8px;
+      color: white;
+    }
+
+    .harvard-logo {
+      background: #A51C30;
+    }
+
+    .harvard-logo-img {
+      width: 20px;
+      height: 20px;
+      border-radius: 3px;
+      margin-right: 8px;
+      vertical-align: middle;
+      object-fit: cover;
+    }
+
+    .harvard-text {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text-primary);
+    }
+
+    .company-logos-img {
+      width: 100%;
+      max-width: 400px;
+      margin: 12px 0;
+      border-radius: 8px;
+    }
+
+    /* Social Links */
+    .social-links {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      margin-top: 32px;
+    }
+
+    .social-link {
+      color: var(--link-blue);
+      text-decoration: none;
+      font-size: 15px;
+    }
+
+    .social-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-content, main section {
+      animation: fadeIn 0.8s ease-out forwards;
+    }
+
+    /* Responsive */
+    @media (max-width: 734px) {
+      .hero-content {
+        flex-direction: column;
+        gap: 32px;
+      }
+
+      .hero-left {
+        text-align: center;
+      }
+
+      .avatar {
+        width: 120px;
+        height: 120px;
+      }
+
+      .hero h1 {
+        font-size: 28px;
+      }
+
+      .hero .tagline {
+        font-size: 16px;
+      }
+
+      .hero-right {
+        text-align: center;
+      }
+
+      .hero-right h2 {
+        justify-content: center;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-content">
+      <a href="/" class="nav-logo">Sunset Beach</a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/#writing">Writing</a>
+        <a href="mailto:io@ssbeach.com">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-content">
+      <div class="hero-left">
+        <img src="/borkert.jpeg" alt="Chris Borkert" class="avatar">
+        <h1>Chris Borkert</h1>
+      </div>
+      <div class="hero-right">
+        <!-- Experience -->
+        <div class="experience-card">
+          <h3>Less Friction LLC | Sunset Beach</h3>
+          <p class="company"></p>
+          <p class="meta">20 years experience | Global 500 companies</p>
+          <img src="/logos.png" alt="Company Logos" class="company-logos-img">
+          <p>Back office systems | Integrations | Automation</p>
+          <p style="font-size: 13px; color: var(--text-tertiary); margin-top: 12px; line-height: 1.5;">Led enterprise IT integration projects across financial services, healthcare, and retail sectors. Implemented ERP systems, data warehouse solutions, and process automation for Fortune 500 clients. Managed cross-functional teams delivering complex technical solutions.</p>
+        </div>
+
+        <!-- Education -->
+        <div class="education-item">
+          <p class="school"><img src="/harvard.png" alt="Harvard" class="harvard-logo-img"><span class="harvard-text">Harvard University (HES) • Computer Science</span></p>
+          <h3>Masters Degree - Candidate</h3>
+          <p class="education-details">Parallel computing • Theoretical Comp Sci • Academic achievement award</p>
+          <div class="education-secondary" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);">
+            <h3>B.A., University of Central Florida</h3>
+          </div>
+        </div>
+
+        <div class="social-links">
+          <a href="https://www.linkedin.com/in/borkert/" class="social-link" target="_blank">LinkedIn</a>
+          <a href="mailto:io@ssbeach.com" class="social-link">Email</a>
+        </div>
+      </div>
+    </div>
+  </header>
+</body>
+</html>
