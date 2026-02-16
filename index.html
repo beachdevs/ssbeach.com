@@ -391,10 +391,32 @@
   </footer>
 
   <script>
+    async function fetchAllRepos(account) {
+      const repos = [];
+      let page = 1;
+
+      while (true) {
+        const res = await fetch(`https://api.github.com/users/${account}/repos?sort=updated&per_page=100&page=${page}`);
+        if (!res.ok) {
+          throw new Error(`GitHub API request failed: ${res.status}`);
+        }
+
+        const batch = await res.json();
+        repos.push(...batch);
+
+        if (batch.length < 100) {
+          break;
+        }
+
+        page += 1;
+      }
+
+      return repos;
+    }
+
     async function fetchRepos() {
       try {
-        const res = await fetch('https://api.github.com/orgs/beachdevs/repos?sort=updated');
-        const repos = await res.json();
+        const repos = await fetchAllRepos('beachdevs');
         document.getElementById('repos').innerHTML = repos
           .filter(r => r.name !== 'ssbeach.com')
           .map(r => `
