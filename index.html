@@ -20,8 +20,8 @@
       --text-primary: #1d1d1f;
       --text-secondary: #86868b;
       --text-tertiary: #6e6e73;
-      --bg-primary: #f5f5f7;
-      --bg-secondary: #ffffff;
+      --bg-primary: #fffbe8;
+      --bg-secondary: #fffdf0;
       --link-blue: #0066cc;
       --link-hover: #0077ed;
       --border: #d2d2d7;
@@ -57,7 +57,7 @@
     nav {
       position: sticky;
       top: 0;
-      background: rgba(251, 251, 253, 0.8);
+      background: var(--bg-secondary);
       backdrop-filter: saturate(180%) blur(20px);
       border-bottom: 1px solid rgba(0, 0, 0, 0.05);
       z-index: 100;
@@ -102,7 +102,7 @@
     /* Hero Section */
     .hero {
       text-align: center;
-      padding: 120px 20px 80px;
+      padding: 48px 20px 28px;
       background: var(--bg-secondary);
     }
 
@@ -112,7 +112,7 @@
       font-weight: 700;
       letter-spacing: -0.015em;
       line-height: 1.05;
-      margin-bottom: 20px;
+      margin-bottom: 12px;
       background: linear-gradient(135deg, #1d1d1f 0%, #434344 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -124,7 +124,7 @@
       letter-spacing: -0.021em;
       color: var(--text-secondary);
       max-width: 600px;
-      margin: 0 auto 40px;
+      margin: 0 auto 12px;
       line-height: 1.28577;
     }
 
@@ -138,12 +138,12 @@
     .section {
       max-width: 980px;
       margin: 0 auto;
-      padding: 100px 22px;
+      padding: 32px 22px;
     }
 
     .section-header {
       text-align: center;
-      margin-bottom: 60px;
+      margin-bottom: 18px;
     }
 
     .section-header h2 {
@@ -151,7 +151,7 @@
       font-size: 48px;
       font-weight: 600;
       letter-spacing: -0.003em;
-      margin-bottom: 16px;
+      margin-bottom: 10px;
     }
 
     .section-header p {
@@ -163,13 +163,13 @@
     /* Blog Grid */
     .blog-grid {
       display: grid;
-      gap: 20px;
+      gap: 8px;
     }
 
     .blog-card {
       background: var(--bg-secondary);
       border-radius: 18px;
-      padding: 32px;
+      padding: 16px;
       text-decoration: none;
       color: inherit;
       transition: transform 0.3s, box-shadow 0.3s;
@@ -193,7 +193,7 @@
     .blog-card .meta {
       font-size: 14px;
       color: var(--text-tertiary);
-      margin-bottom: 12px;
+      margin-bottom: 8px;
       letter-spacing: -0.016em;
     }
 
@@ -207,7 +207,7 @@
     /* Projects Section */
     .projects-section {
       background: var(--bg-secondary);
-      padding: 100px 22px;
+      padding: 32px 22px;
     }
 
     .projects-container {
@@ -217,14 +217,14 @@
 
     #repos {
       display: grid;
-      gap: 16px;
+      gap: 6px;
     }
 
     .repo-link {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 24px 32px;
+      padding: 12px 16px;
       background: var(--bg-primary);
       border-radius: 14px;
       text-decoration: none;
@@ -233,7 +233,7 @@
     }
 
     .repo-link:hover {
-      background: #e8e8ed;
+      background: #fff4c7;
     }
 
     .repo-name {
@@ -250,7 +250,7 @@
     /* GitHub Link */
     .github-cta {
       text-align: center;
-      margin-top: 48px;
+      margin-top: 12px;
     }
 
     .github-cta a {
@@ -267,7 +267,7 @@
     /* Footer */
     footer {
       background: var(--bg-primary);
-      padding: 40px 22px;
+      padding: 12px 22px;
       text-align: center;
       border-top: 1px solid var(--border);
     }
@@ -280,6 +280,10 @@
 
     /* Responsive */
     @media (max-width: 734px) {
+      .hero {
+        padding: 40px 16px 24px;
+      }
+
       .hero h1 {
         font-size: 48px;
       }
@@ -288,12 +292,28 @@
         font-size: 21px;
       }
       
+      .section {
+        padding: 26px 16px;
+      }
+
+      .projects-section {
+        padding: 26px 16px;
+      }
+
+      .section-header {
+        margin-bottom: 14px;
+      }
+
       .section-header h2 {
         font-size: 32px;
       }
       
       .blog-card {
-        padding: 24px;
+        padding: 14px;
+      }
+
+      .repo-link {
+        padding: 10px 12px;
       }
     }
 
@@ -318,6 +338,46 @@
     <h1 class="animate-in">Sunset Beach Labs</h1>
     <p class="animate-in delay-1">Building reliable AI agents, infrastructure automation, and high-performance systems.</p>
 
+  </section>
+
+  <section class="projects-section" id="projects">
+    <div class="projects-container">
+      <div class="section-header">
+        <h2>Open Source</h2>
+        <p>Tools and libraries we're building in public.</p>
+      </div>
+      
+      <div id="repos">
+        <a href="https://github.com/beachdevs/apicli" target="_blank" class="repo-link">
+          <span class="repo-name">🔌 beachdevs/apicli</span>
+          <span class="repo-arrow">→</span>
+        </a>
+        <a href="https://github.com/beachdevs/gptjs" target="_blank" class="repo-link">
+          <span class="repo-name">🤖 beachdevs/gptjs</span>
+          <span class="repo-arrow">→</span>
+        </a>
+        <a href="https://github.com/beachdevs/compare-network" target="_blank" class="repo-link">
+          <span class="repo-name">📡 beachdevs/compare-network</span>
+          <span class="repo-arrow">→</span>
+        </a>
+        <a href="https://github.com/beachdevs/jsonc-data" target="_blank" class="repo-link">
+          <span class="repo-name">🧩 beachdevs/jsonc-data</span>
+          <span class="repo-arrow">→</span>
+        </a>
+        <a href="https://github.com/beachdevs/vanilla-light" target="_blank" class="repo-link">
+          <span class="repo-name">🍦 beachdevs/vanilla-light</span>
+          <span class="repo-arrow">→</span>
+        </a>
+        <a href="https://github.com/beachdevs/container" target="_blank" class="repo-link">
+          <span class="repo-name">📦 beachdevs/container</span>
+          <span class="repo-arrow">→</span>
+        </a>
+      </div>
+      
+      <div class="github-cta">
+        <a href="https://github.com/beachdevs" target="_blank">View all projects on GitHub →</a>
+      </div>
+    </div>
   </section>
 
   <section class="section" id="writing">
@@ -371,66 +431,9 @@
     </div>
   </section>
 
-  <section class="projects-section" id="projects">
-    <div class="projects-container">
-      <div class="section-header">
-        <h2>Open Source</h2>
-        <p>Tools and libraries we're building in public.</p>
-      </div>
-      
-      <div id="repos"></div>
-      
-      <div class="github-cta">
-        <a href="https://github.com/beachdevs" target="_blank">View all projects on GitHub →</a>
-      </div>
-    </div>
-  </section>
-
   <footer>
     <p>&copy; 2026 Sunset Beach Inference Labs. All rights reserved.</p>
   </footer>
 
-  <script>
-    async function fetchAllRepos(account) {
-      const repos = [];
-      let page = 1;
-
-      while (true) {
-        const res = await fetch(`https://api.github.com/users/${account}/repos?sort=updated&per_page=100&page=${page}`);
-        if (!res.ok) {
-          throw new Error(`GitHub API request failed: ${res.status}`);
-        }
-
-        const batch = await res.json();
-        repos.push(...batch);
-
-        if (batch.length < 100) {
-          break;
-        }
-
-        page += 1;
-      }
-
-      return repos;
-    }
-
-    async function fetchRepos() {
-      try {
-        const repos = await fetchAllRepos('beachdevs');
-        document.getElementById('repos').innerHTML = repos
-          .filter(r => r.name !== 'ssbeach.com')
-          .map(r => `
-            <a href="${r.html_url}" target="_blank" class="repo-link">
-              <span class="repo-name">${r.name}</span>
-              <span class="repo-arrow">→</span>
-            </a>
-          `)
-          .join('');
-      } catch (e) {
-        console.error('Error fetching repos:', e);
-      }
-    }
-    fetchRepos();
-  </script>
 </body>
 </html>
