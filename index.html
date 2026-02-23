@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sunset Beach Labs</title>
-  <meta name="description" content="Sunset Beach Labs builds reliable AI agents, infrastructure automation, and high-performance systems.">
+  <title>Sunset Beach</title>
+  <meta name="description" content="Sunset Beach builds reliable AI agents, infrastructure automation, and high-performance systems.">
   <link rel="canonical" href="https://ssbeach.com/">
   <link rel="sitemap" type="application/xml" href="/sitemap.xml">
   
-  <meta property="og:title" content="Sunset Beach Labs">
+  <meta property="og:title" content="Sunset Beach">
   <meta property="og:description" content="Building reliable AI agents and infrastructure.">
   <meta property="og:url" content="https://ssbeach.com/">
   <meta property="og:type" content="website">
@@ -17,462 +17,416 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --text-primary: #1d1d1f;
-      --text-secondary: #86868b;
-      --text-tertiary: #6e6e73;
-      --bg-primary: #fffbe8;
-      --bg-secondary: #fffdf0;
-      --link-blue: #0066cc;
-      --link-hover: #0077ed;
-      --border: #d2d2d7;
+      --bg-dark: #1a1a1a;
+      --panel-light: #f9f9f7;
+      --panel-dark: #2a2a2a;
+      --text-main: #1d1d1f;
+      --text-muted: #86868b;
+      --accent-dark: #333;
+      --border-light: rgba(0,0,0,0.1);
+      --border-dark: rgba(255,255,255,0.05);
     }
 
-    @font-face {
-      font-family: 'SF Pro Display';
-      src: local('.SFNSDisplay'), local('SF Pro Display'), local('Helvetica Neue'), local('Helvetica'), local('Arial');
-      font-weight: 400 700;
-    }
-
-    @font-face {
-      font-family: 'SF Pro Text';
-      src: local('.SFNSText'), local('SF Pro Text'), local('Helvetica Neue'), local('Helvetica'), local('Arial');
-      font-weight: 400 600;
-    }
-
-    html {
-      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--panel-light);
+      color: var(--text-main);
       -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
     }
 
-    body {
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      line-height: 1.47059;
-      font-weight: 400;
-      letter-spacing: -0.022em;
-    }
-
-    /* Navigation */
-    nav {
-      position: sticky;
-      top: 0;
-      background: var(--bg-secondary);
-      backdrop-filter: saturate(180%) blur(20px);
-      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-      z-index: 100;
-    }
-
-    .nav-content {
-      max-width: 1024px;
-      margin: 0 auto;
-      padding: 0 22px;
-      height: 48px;
+    .app-container {
+      min-height: 100vh;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
+      align-items: stretch;
+      justify-content: center;
+      padding: 0;
     }
 
-    .nav-logo {
-      font-size: 21px;
-      font-weight: 600;
-      letter-spacing: -0.021em;
-      color: var(--text-primary);
-      text-decoration: none;
+    @media (min-width: 640px) {
+      .app-container { padding: 0; }
+    }
+
+    .main-card {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    @media (min-width: 1024px) {
+      .main-card {
+        flex-direction: row;
+      }
+    }
+
+    /* Left Panel - Light Side (Content) */
+    .panel-left {
+      flex: 2;
+      background-color: var(--panel-light);
+      padding: 2.5rem;
+      overflow-y: auto;
+    }
+
+    @media (min-width: 1024px) {
+      .panel-left { padding: 4rem; }
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 3rem;
+    }
+
+    .logo-area h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
     }
 
     .nav-links {
       display: flex;
-      gap: 28px;
+      gap: 1.5rem;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
     }
 
     .nav-links a {
-      font-size: 12px;
-      color: var(--text-primary);
+      color: var(--text-muted);
       text-decoration: none;
-      opacity: 0.8;
-      transition: opacity 0.3s;
-      letter-spacing: -0.01em;
+      transition: color 0.2s;
     }
 
     .nav-links a:hover {
-      opacity: 1;
+      color: var(--text-main);
     }
 
-    /* Hero Section */
-    .hero {
-      text-align: center;
-      padding: 48px 20px 28px;
-      background: var(--bg-secondary);
+    .featured-box {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 3rem;
+      padding: 1.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      background: rgba(0,0,0,0.02);
     }
 
-    .hero h1 {
-      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-      font-size: 80px;
+    .featured-icon {
+      font-family: monospace;
+      font-weight: 900;
+      color: #ccc;
+      font-size: 1.25rem;
+    }
+
+    .featured-text h2 {
+      font-size: 1.25rem;
       font-weight: 700;
-      letter-spacing: -0.015em;
-      line-height: 1.05;
-      margin-bottom: 12px;
-      background: linear-gradient(135deg, #1d1d1f 0%, #434344 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
     }
 
-    .hero p {
-      font-size: 28px;
-      font-weight: 400;
-      letter-spacing: -0.021em;
-      color: var(--text-secondary);
-      max-width: 600px;
-      margin: 0 auto 12px;
-      line-height: 1.28577;
+    .featured-text p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
     }
 
-    .hero-meta {
-      font-size: 17px;
-      color: var(--text-tertiary);
-      letter-spacing: -0.021em;
+    /* Blog List */
+    .content-section {
+      margin-bottom: 3rem;
     }
 
-    /* Content Sections */
-    .section {
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 32px 22px;
+    .section-title {
+      font-size: 0.75rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.5rem;
     }
 
-    .section-header {
-      text-align: center;
-      margin-bottom: 18px;
-    }
-
-    .section-header h2 {
-      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
-      font-size: 48px;
-      font-weight: 600;
-      letter-spacing: -0.003em;
-      margin-bottom: 10px;
-    }
-
-    .section-header p {
-      font-size: 21px;
-      color: var(--text-secondary);
-      letter-spacing: -0.021em;
-    }
-
-    /* Blog Grid */
-    .blog-grid {
-      display: grid;
-      gap: 8px;
-    }
-
-    .blog-card {
-      background: var(--bg-secondary);
-      border-radius: 18px;
-      padding: 16px;
+    .blog-item {
+      display: flex;
+      padding: 0.75rem 0;
       text-decoration: none;
       color: inherit;
-      transition: transform 0.3s, box-shadow 0.3s;
-      display: block;
+      border-radius: 0.25rem;
+      transition: background 0.2s;
     }
 
-    .blog-card:hover {
-      transform: scale(1.01);
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    .blog-item:hover {
+      background: rgba(0,0,0,0.03);
     }
 
-    .blog-card h3 {
-      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
-      font-size: 24px;
-      font-weight: 600;
-      letter-spacing: -0.021em;
-      margin-bottom: 8px;
-      color: var(--text-primary);
+    .blog-meta {
+      width: 100px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: right;
+      padding-right: 1.5rem;
+      font-weight: 500;
+      flex-shrink: 0;
     }
 
-    .blog-card .meta {
-      font-size: 14px;
-      color: var(--text-tertiary);
-      margin-bottom: 8px;
-      letter-spacing: -0.016em;
+    .blog-content h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.2;
     }
 
-    .blog-card .excerpt {
-      font-size: 17px;
-      color: var(--text-secondary);
-      line-height: 1.47059;
-      letter-spacing: -0.021em;
+    .blog-content p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+      font-style: italic;
     }
 
-    /* Projects Section */
-    .projects-section {
-      background: var(--bg-secondary);
-      padding: 32px 22px;
+    /* Right Panel - Dark Side (Info) */
+    .panel-right {
+      flex: 1;
+      background-color: var(--panel-dark);
+      padding: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      color: var(--panel-light);
     }
 
-    .projects-container {
-      max-width: 980px;
-      margin: 0 auto;
+    .temp-display {
+      margin-bottom: 3rem;
     }
 
-    #repos {
-      display: grid;
-      gap: 6px;
+    .temp-value {
+      font-size: 7.5rem;
+      font-weight: 200;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      display: flex;
     }
 
-    .repo-link {
+    .temp-degree {
+      font-size: 3rem;
+      margin-top: 1.5rem;
+    }
+
+    .weather-status {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: #888;
+      margin-top: 0.5rem;
+    }
+
+    /* Projects List */
+    .projects-list {
+      flex: 1;
+    }
+
+    .project-item {
       display: flex;
       align-items: center;
+      gap: 1rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border-dark);
+      text-decoration: none;
+      color: rgba(232, 234, 227, 0.8);
+      transition: color 0.2s;
+    }
+
+    .project-item:hover {
+      color: white;
+    }
+
+    .project-item:last-child {
+      border-bottom: none;
+    }
+
+    .project-info h4 {
+      font-size: 0.875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .project-info p {
+      font-size: 0.75rem;
+      color: #666;
+      margin-top: 0.25rem;
+    }
+
+    .footer-status {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-dark);
+      display: flex;
       justify-content: space-between;
-      padding: 12px 16px;
-      background: var(--bg-primary);
-      border-radius: 14px;
-      text-decoration: none;
-      color: var(--text-primary);
-      transition: background 0.3s;
+      font-size: 0.625rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: #444;
     }
 
-    .repo-link:hover {
-      background: #fff4c7;
-    }
-
-    .repo-name {
-      font-size: 19px;
-      font-weight: 600;
-      letter-spacing: -0.021em;
-    }
-
-    .repo-arrow {
-      color: var(--link-blue);
-      font-size: 21px;
-    }
-
-    .repo-preview {
-      display: block;
-      margin-top: 4px;
-      padding: 12px;
-      background: var(--bg-primary);
-      border-radius: 14px;
-      text-decoration: none;
-      color: inherit;
-      transition: background 0.3s;
-    }
-
-    .repo-preview:hover {
-      background: #fff4c7;
-    }
-
-    .repo-preview img {
-      width: 100%;
-      height: auto;
-      display: block;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-    }
-
-    .repo-preview-label {
-      display: block;
-      margin-top: 8px;
-      font-size: 14px;
-      color: var(--link-blue);
-      letter-spacing: -0.016em;
-    }
-
-    /* GitHub Link */
-    .github-cta {
-      text-align: center;
-      margin-top: 12px;
-    }
-
-    .github-cta a {
-      color: var(--link-blue);
-      text-decoration: none;
-      font-size: 19px;
-      letter-spacing: -0.021em;
-    }
-
-    .github-cta a:hover {
-      text-decoration: underline;
-    }
-
-    /* Footer */
-    footer {
-      background: var(--bg-primary);
-      padding: 12px 22px;
-      text-align: center;
-      border-top: 1px solid var(--border);
-    }
-
-    footer p {
-      font-size: 12px;
-      color: var(--text-tertiary);
-      letter-spacing: -0.01em;
-    }
-
-    /* Responsive */
-    @media (max-width: 734px) {
-      .hero {
-        padding: 40px 16px 24px;
-      }
-
-      .hero h1 {
-        font-size: 48px;
-      }
-      
-      .hero p {
-        font-size: 21px;
-      }
-      
-      .section {
-        padding: 26px 16px;
-      }
-
-      .projects-section {
-        padding: 26px 16px;
-      }
-
-      .section-header {
-        margin-bottom: 14px;
-      }
-
-      .section-header h2 {
-        font-size: 32px;
-      }
-      
-      .blog-card {
-        padding: 14px;
-      }
-
-      .repo-link {
-        padding: 10px 12px;
-      }
+    hr {
+      border: 0;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
     }
 
     /* Animations */
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .animate-in {
-      animation: fadeIn 1s ease-out forwards;
-      opacity: 0;
+    .animate {
+      animation: fadeIn 0.6s ease-out forwards;
     }
-
-    .delay-1 { animation-delay: 0.1s; }
-    .delay-2 { animation-delay: 0.2s; }
-    .delay-3 { animation-delay: 0.3s; }
   </style>
 </head>
 <body>
-  <section class="hero">
-    <h1 class="animate-in">Sunset Beach Labs</h1>
-    <p class="animate-in delay-1">Building reliable AI agents, infrastructure automation, and high-performance systems.</p>
-
-  </section>
-
-  <section class="projects-section" id="projects">
-    <div class="projects-container">
-      <div class="section-header">
-        <h2>Open Source</h2>
-        <p>Tools and libraries we're building in public.</p>
-      </div>
+  <div class="app-container">
+    <main class="main-card">
       
-      <div id="repos">
-        <a href="https://github.com/beachdevs/apicli" target="_blank" class="repo-link">
-          <span class="repo-name">🔌 beachdevs/apicli</span>
-          <span class="repo-arrow">→</span>
-        </a>
-        <a href="https://github.com/beachdevs/gptjs" target="_blank" class="repo-link">
-          <span class="repo-name">🤖 beachdevs/gptjs</span>
-          <span class="repo-arrow">→</span>
-        </a>
-        <a href="https://github.com/beachdevs/compare-network" target="_blank" class="repo-link">
-          <span class="repo-name">📡 beachdevs/compare-network</span>
-          <span class="repo-arrow">→</span>
-        </a>
-        <a href="https://github.com/beachdevs/jsonc-data" target="_blank" class="repo-link">
-          <span class="repo-name">🧩 beachdevs/jsonc-data</span>
-          <span class="repo-arrow">→</span>
-        </a>
-        <a href="https://github.com/beachdevs/vanilla-light" target="_blank" class="repo-link">
-          <span class="repo-name">🍦 beachdevs/vanilla-light</span>
-          <span class="repo-arrow">→</span>
-        </a>
-        <a href="https://github.com/beachdevs/container" target="_blank" class="repo-link">
-          <span class="repo-name">📦 beachdevs/container</span>
-          <span class="repo-arrow">→</span>
-        </a>
-        <a href="https://github.com/beachdevs/CodeSprout" target="_blank" class="repo-link">
-          <span class="repo-name">🌱 beachdevs/CodeSprout</span>
-          <span class="repo-arrow">→</span>
-        </a>
-        <a href="https://qeditor.dev" target="_blank" class="repo-preview">
-          <img src="codesprout-qeditor.png" alt="CodeSprout app screenshot from qeditor.dev">
-          <span class="repo-preview-label">CodeSprout app preview at qeditor.dev →</span>
-        </a>
+      <!-- Left side: Content & Writing -->
+      <div class="panel-left">
+        <header class="header-row">
+          <div class="logo-area">
+            <h1 class="animate">Sunset Beach</h1>
+            <nav class="nav-links animate">
+              <a href="/">Home</a>
+              <a href="https://github.com/beachdevs">GitHub</a>
+              <a href="mailto:io@ssbeach.com">Contact</a>
+            </nav>
+          </div>
+        </header>
+
+        <div class="featured-box animate">
+          <div class="featured-icon">|||</div>
+          <div class="featured-text">
+            <h2>Building Reliable AI Agents</h2>
+            <p>Infrastructure automation and high-performance systems for the next generation.</p>
+          </div>
+        </div>
+
+        <section class="content-section">
+          <h2 class="section-title">Open Source</h2>
+          <div class="blog-list">
+            <a href="https://github.com/beachdevs/q" class="blog-item animate">
+              <span class="blog-meta">AI</span>
+              <div class="blog-content">
+                <h3>q</h3>
+                <p>High-performance terminal AI assistant for developers.</p>
+              </div>
+            </a>
+            <a href="https://github.com/beachdevs/apicli" class="blog-item animate">
+              <span class="blog-meta">CLI</span>
+              <div class="blog-content">
+                <h3>apicli</h3>
+                <p>Modern API testing CLI and Node.js module.</p>
+              </div>
+            </a>
+            <a href="https://github.com/beachdevs/CodeSprout" class="blog-item animate">
+              <span class="blog-meta">Gen</span>
+              <div class="blog-content">
+                <h3>CodeSprout</h3>
+                <p>Intelligent app and code generation tooling.</p>
+              </div>
+            </a>
+            <a href="https://github.com/beachdevs/gptjs" class="blog-item animate">
+              <span class="blog-meta">ML</span>
+              <div class="blog-content">
+                <h3>gptjs</h3>
+                <p>Minimalist GPT-style language model in JS.</p>
+              </div>
+            </a>
+            <a href="https://github.com/beachdevs/compare-network" class="blog-item animate">
+              <span class="blog-meta">Bench</span>
+              <div class="blog-content">
+                <h3>compare-network</h3>
+                <p>HTTP request performance benchmarking.</p>
+              </div>
+            </a>
+            <a href="https://github.com/beachdevs/vanilla-light" class="blog-item animate">
+              <span class="blog-meta">Web</span>
+              <div class="blog-content">
+                <h3>vanilla-light</h3>
+                <p>Lightweight full-stack web framework.</p>
+              </div>
+            </a>
+          </div>
+        </section>
+
+        <hr>
+
+        <div class="featured-box animate" style="border: none; background: transparent; padding: 0;">
+          <div class="featured-text">
+            <h3 style="font-size: 1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;">
+              Latest Research: <span style="color: var(--text-muted); font-style: italic;">Adaptive Multi-Agent Systems</span>
+            </h3>
+          </div>
+        </div>
       </div>
-      
-      <div class="github-cta">
-        <a href="https://github.com/beachdevs" target="_blank">View all projects on GitHub →</a>
+
+      <!-- Right side: Writing & Stats -->
+      <div class="panel-right">
+        <div class="temp-display animate">
+          <div class="temp-value">
+            <span>74</span>
+            <span class="temp-degree">°</span>
+          </div>
+          <p class="weather-status">Sunset Beach // 2026</p>
+        </div>
+
+        <section class="content-section">
+          <h2 class="section-title" style="color: #666; border-color: var(--border-dark);">Writing</h2>
+          <div class="projects-list">
+            <a href="blog/building-ai-agents-that-actually-work.html" class="project-item animate">
+              <div class="project-info">
+                <h4 style="color: white;">Building AI Agents That Actually Work</h4>
+                <p style="color: #888;">Jan 15 • Production LLM lessons</p>
+              </div>
+            </a>
+            <a href="blog/the-end-of-config-hell.html" class="project-item animate">
+              <div class="project-info">
+                <h4 style="color: white;">The End of Config Hell</h4>
+                <p style="color: #888;">Jan 28 • Beyond YAML abstractions</p>
+              </div>
+            </a>
+            <a href="blog/why-rust-is-eating-webassembly.html" class="project-item animate">
+              <div class="project-info">
+                <h4 style="color: white;">Why Rust Is Eating WebAssembly</h4>
+                <p style="color: #888;">Feb 12 • Performance with Wasm</p>
+              </div>
+            </a>
+            <a href="blog/database-performance-at-10-million-qps.html" class="project-item animate">
+              <div class="project-info">
+                <h4 style="color: white;">Database Performance at 10M QPS</h4>
+                <p style="color: #888;">Feb 20 • Scaling distributed caching</p>
+              </div>
+            </a>
+            <a href="blog/apis-that-developers-love.html" class="project-item animate">
+              <div class="project-info">
+                <h4 style="color: white;">APIs That Developers Love</h4>
+                <p style="color: #888;">Feb 27 • Intuitive system design</p>
+              </div>
+            </a>
+          </div>
+        </section>
+
+        <footer class="footer-status animate">
+          <span>Status: Online</span>
+          <span>v2.0.4</span>
+        </footer>
       </div>
-    </div>
-  </section>
 
-  <section class="section" id="writing">
-    <div class="section-header">
-      <h2>Writing</h2>
-      <p>Thoughts on engineering, architecture, and building systems that scale.</p>
-    </div>
-    
-    <div class="blog-grid">
-      <a href="blog/building-ai-agents-that-actually-work.html" class="blog-card animate-in delay-1">
-        <h3>Building AI Agents That Actually Work</h3>
-        <div class="meta">January 15, 2026 · Engineering</div>
-        <div class="excerpt">Lessons from building production LLM agents. Learn how to manage memory, design tools, and debug AI systems that work reliably at scale.</div>
-      </a>
-
-      <a href="blog/the-end-of-config-hell.html" class="blog-card animate-in delay-2">
-        <h3>The End of Config Hell</h3>
-        <div class="meta">January 28, 2026 · Infrastructure</div>
-        <div class="excerpt">Moving beyond YAML to proper infrastructure abstractions. How we reduced 47,000 lines of config to 400 lines of code.</div>
-      </a>
-
-      <a href="blog/why-rust-is-eating-webassembly.html" class="blog-card animate-in delay-3">
-        <h3>Why Rust Is Eating WebAssembly</h3>
-        <div class="meta">February 12, 2026 · Systems</div>
-        <div class="excerpt">Real-world performance wins with Rust and WebAssembly. How we built a 180KB browser app that processes 10GB of data without stalling the UI.</div>
-      </a>
-
-      <a href="blog/database-performance-at-10-million-qps.html" class="blog-card animate-in">
-        <h3>Database Performance at 10 Million QPS</h3>
-        <div class="meta">February 20, 2026 · Performance</div>
-        <div class="excerpt">How we scaled our database to handle 10 million queries per second. Lessons on query optimization, connection pooling, and distributed caching.</div>
-      </a>
-
-      <a href="blog/apis-that-developers-love.html" class="blog-card animate-in">
-        <h3>APIs That Developers Love</h3>
-        <div class="meta">February 27, 2026 · Design</div>
-        <div class="excerpt">Building developer-friendly APIs requires more than good documentation. Design principles for APIs that are intuitive, consistent, and delightful to use.</div>
-      </a>
-
-      <a href="blog/zero-trust-without-the-pain.html" class="blog-card animate-in">
-        <h3>Zero Trust Without the Pain</h3>
-        <div class="meta">March 6, 2026 · Security</div>
-        <div class="excerpt">Implementing zero-trust security without breaking developer productivity. Practical patterns for identity, authorization, and network segmentation.</div>
-      </a>
-
-      <a href="blog/observability-for-systems-that-cant-fail.html" class="blog-card animate-in">
-        <h3>Observability for Systems That Can't Fail</h3>
-        <div class="meta">March 13, 2026 · Reliability</div>
-        <div class="excerpt">Building observability systems that tell you why things break, not just when. Structured logging, distributed tracing, and intelligent alerting.</div>
-      </a>
-    </div>
-  </section>
-
-  <footer>
-    <p>&copy; 2026 Sunset Beach Inference Labs. All rights reserved.</p>
-  </footer>
-
+    </main>
+  </div>
 </body>
 </html>
+
