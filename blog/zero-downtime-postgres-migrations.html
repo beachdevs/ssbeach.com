@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zero-Downtime Postgres Migrations | Sunset Beach Labs</title>
+  <meta name="description" content="Schema changes should not freeze deploys. A practical zero-downtime migration process for Postgres in high-traffic systems.">
+  <meta name="keywords" content="Postgres migrations, zero downtime deployment, database reliability, schema evolution">
+  <link rel="canonical" href="https://ssbeach.com/blog/zero-downtime-postgres-migrations.html">
+
+  <meta property="og:title" content="Zero-Downtime Postgres Migrations">
+  <meta property="og:description" content="A practical zero-downtime migration process for Postgres in high-traffic systems.">
+  <meta property="og:url" content="https://ssbeach.com/blog/zero-downtime-postgres-migrations.html">
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-03-03">
+  <meta property="article:author" content="Sunset Beach Labs">
+  <meta property="article:section" content="Databases">
+  <meta property="og:site_name" content="Sunset Beach Labs">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Zero-Downtime Postgres Migrations">
+  <meta name="twitter:description" content="A practical zero-downtime migration process for Postgres in high-traffic systems.">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Zero-Downtime Postgres Migrations",
+    "description": "Schema changes should not freeze deploys. A practical zero-downtime migration process for Postgres in high-traffic systems.",
+    "url": "https://ssbeach.com/blog/zero-downtime-postgres-migrations.html",
+    "datePublished": "2026-03-03",
+    "author": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --fg: #111;
+      --fg-muted: #888;
+      --bg: #faf9f7;
+      --accent: #c8a46e;
+      --rule: #e4e0da;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--fg);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.7;
+    }
+    article {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 400;
+      font-style: italic;
+      font-size: 2.2rem;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .meta {
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+    }
+    h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 400;
+      font-size: 1.25rem;
+      margin: 2.5rem 0 1rem;
+    }
+    p {
+      margin-bottom: 1.2rem;
+    }
+    code {
+      background: rgba(0,0,0,0.04);
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.9em;
+    }
+    pre {
+      background: #f5f3f0;
+      padding: 1.2rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+      font-size: 0.85rem;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+    a:hover {
+      border-color: var(--accent);
+    }
+    .back {
+      display: inline-block;
+      margin-top: 3rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Zero-Downtime Postgres Migrations</h1>
+      <div class="meta">March 3, 2026 · Databases</div>
+    </header>
+
+    <p>Downtime during migrations is usually a process failure, not a database limitation.</p>
+
+    <p>Most incidents happen when schema and application deployments are tightly coupled. A safe migration strategy separates those concerns.</p>
+
+    <h2>Use Expand and Contract</h2>
+
+    <p>Every risky migration should follow a two-phase path:</p>
+
+    <pre><code>1) Expand: add nullable columns, new tables, new indexes concurrently
+2) Dual-write: old + new schema paths in application
+3) Backfill: migrate historical rows in batches
+4) Read-switch: read from new schema
+5) Contract: remove old paths and columns later</code></pre>
+
+    <p>This sequence keeps both app versions compatible throughout rollout.</p>
+
+    <h2>Never Block Writes with Big Locks</h2>
+
+    <p>Operations like <code>ALTER TABLE ... SET NOT NULL</code> and large index builds can block traffic. Use safer alternatives:</p>
+
+    <pre><code>CREATE INDEX CONCURRENTLY idx_events_tenant_created
+  ON events (tenant_id, created_at);
+
+ALTER TABLE events
+  ADD CONSTRAINT events_status_valid
+  CHECK (status IN ('pending','done','failed')) NOT VALID;
+
+ALTER TABLE events VALIDATE CONSTRAINT events_status_valid;</code></pre>
+
+    <p>Validate constraints after deployment, not in the critical path.</p>
+
+    <h2>Backfill in Controlled Batches</h2>
+
+    <p>Backfills should be resumable and rate-limited. We run chunked jobs with checkpoints and adaptive sleep based on replica lag.</p>
+
+    <pre><code>batch_size = 2000
+while rows_remaining:
+  migrate_next_batch(batch_size)
+  if replica_lag_ms > 3000:
+    sleep(2)</code></pre>
+
+    <p>This avoids saturating IO and protects read replicas.</p>
+
+    <h2>Migration Rollbacks Need Their Own Plan</h2>
+
+    <p>Rollback is not always "run down migration." If data has already moved, down migrations can be destructive. We use forward-fix rollbacks: keep schema expanded, disable new read paths, and redeploy.</p>
+
+    <p>Schema contraction happens only after confidence windows close.</p>
+
+    <h2>Operational Checklist</h2>
+
+    <pre><code>- migration rehearsed in staging with production-like volume
+- lock timeout set (never infinite)
+- query plans captured before and after
+- canary deploy enabled
+- alerting on write latency + error rate
+- kill switch for dual-write path</code></pre>
+
+    <p>When this checklist is standard, migrations stop being scary. They become routine engineering work.</p>
+
+    <a href="/index.html" class="back">← Back to Home</a>
+  </article>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Local-First DevTools for Small Teams | Sunset Beach Labs</title>
+  <meta name="description" content="Small engineering teams ship faster with local-first tooling. Design workflows that work offline and sync cleanly when connected.">
+  <meta name="keywords" content="local-first software, developer experience, small teams, tooling strategy, offline-first">
+  <link rel="canonical" href="https://ssbeach.com/blog/local-first-devtools-for-small-teams.html">
+
+  <meta property="og:title" content="Local-First DevTools for Small Teams">
+  <meta property="og:description" content="Design workflows that work offline and sync cleanly when connected.">
+  <meta property="og:url" content="https://ssbeach.com/blog/local-first-devtools-for-small-teams.html">
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-03-02">
+  <meta property="article:author" content="Sunset Beach Labs">
+  <meta property="article:section" content="DevEx">
+  <meta property="og:site_name" content="Sunset Beach Labs">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Local-First DevTools for Small Teams">
+  <meta name="twitter:description" content="Design workflows that work offline and sync cleanly when connected.">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Local-First DevTools for Small Teams",
+    "description": "Small engineering teams ship faster with local-first tooling. Design workflows that work offline and sync cleanly when connected.",
+    "url": "https://ssbeach.com/blog/local-first-devtools-for-small-teams.html",
+    "datePublished": "2026-03-02",
+    "author": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --fg: #111;
+      --fg-muted: #888;
+      --bg: #faf9f7;
+      --accent: #c8a46e;
+      --rule: #e4e0da;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--fg);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.7;
+    }
+    article {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 400;
+      font-style: italic;
+      font-size: 2.2rem;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .meta {
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+    }
+    h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 400;
+      font-size: 1.25rem;
+      margin: 2.5rem 0 1rem;
+    }
+    p {
+      margin-bottom: 1.2rem;
+    }
+    code {
+      background: rgba(0,0,0,0.04);
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.9em;
+    }
+    pre {
+      background: #f5f3f0;
+      padding: 1.2rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+      font-size: 0.85rem;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+    a:hover {
+      border-color: var(--accent);
+    }
+    .back {
+      display: inline-block;
+      margin-top: 3rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Local-First DevTools for Small Teams</h1>
+      <div class="meta">March 2, 2026 · DevEx</div>
+    </header>
+
+    <p>Small teams lose momentum when every task depends on shared cloud state.</p>
+
+    <p>Waiting on CI, remote preview environments, or central services can turn a 20-minute change into a 2-hour loop. Local-first tooling fixes that.</p>
+
+    <h2>Design for Solo Speed First</h2>
+
+    <p>When one engineer can clone, run, test, and inspect without external dependencies, throughput jumps. The local loop should support:</p>
+
+    <pre><code>- one-command boot
+- deterministic seed data
+- offline docs and mocks
+- realistic telemetry output</code></pre>
+
+    <p>Cloud integration can layer on top. It should not be required for the first iteration.</p>
+
+    <h2>Sync Is a Product Feature</h2>
+
+    <p>Local-first does not mean disconnected forever. It means local state is primary and sync is explicit.</p>
+
+    <p>Good tooling shows sync status, conflict details, and replay history. Hidden sync creates fear. Visible sync creates trust.</p>
+
+    <h2>Use Portable Data Formats</h2>
+
+    <p>We bias toward append-only logs and plain-text snapshots. Engineers can diff them, review them in PRs, and recover after bad merges.</p>
+
+    <pre><code>state/
+  events.log
+  snapshots/
+    2026-03-02T09-15-22.json
+    2026-03-02T09-22-40.json</code></pre>
+
+    <p>The point is not nostalgia for files. It is operational clarity.</p>
+
+    <h2>Parallel Work Gets Easier</h2>
+
+    <p>With local-first workflows, branches are cheap and experimentation is safer. Multiple engineers can test alternate approaches without stepping on shared environments.</p>
+
+    <p>Integration becomes a deliberate sync step rather than a constant background source of flakiness.</p>
+
+    <h2>Keep Remote as Verification, Not Development</h2>
+
+    <p>CI and staging are still essential. But they should confirm quality, not act as the primary place to discover basic breakage.</p>
+
+    <p>Our rule: if a bug can be caught locally, catching it remotely is a tooling failure.</p>
+
+    <h2>Small Teams Win with Fast Loops</h2>
+
+    <p>Local-first tooling is not only a technical architecture. It is a strategic choice about cycle time. Teams with faster loops learn faster, and teams that learn faster ship better products.</p>
+
+    <a href="/index.html" class="back">← Back to Home</a>
+  </article>
+</body>
+</html>

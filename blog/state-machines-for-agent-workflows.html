@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>State Machines for Agent Workflows | Sunset Beach Labs</title>
+  <meta name="description" content="Hidden agent state causes flaky behavior. Use explicit state machines to make workflows testable, debuggable, and safe in production.">
+  <meta name="keywords" content="AI agents, state machines, workflow orchestration, reliability engineering, LLM systems">
+  <link rel="canonical" href="https://ssbeach.com/blog/state-machines-for-agent-workflows.html">
+
+  <meta property="og:title" content="State Machines for Agent Workflows">
+  <meta property="og:description" content="Use explicit state transitions to make AI agents reliable in production.">
+  <meta property="og:url" content="https://ssbeach.com/blog/state-machines-for-agent-workflows.html">
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-03-05">
+  <meta property="article:author" content="Sunset Beach Labs">
+  <meta property="article:section" content="Architecture">
+  <meta property="og:site_name" content="Sunset Beach Labs">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="State Machines for Agent Workflows">
+  <meta name="twitter:description" content="Use explicit state transitions to make AI agents reliable in production.">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "State Machines for Agent Workflows",
+    "description": "Hidden agent state causes flaky behavior. Use explicit state machines to make workflows testable, debuggable, and safe in production.",
+    "url": "https://ssbeach.com/blog/state-machines-for-agent-workflows.html",
+    "datePublished": "2026-03-05",
+    "author": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --fg: #111;
+      --fg-muted: #888;
+      --bg: #faf9f7;
+      --accent: #c8a46e;
+      --rule: #e4e0da;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--fg);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.7;
+    }
+    article {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 400;
+      font-style: italic;
+      font-size: 2.2rem;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .meta {
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+    }
+    h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 400;
+      font-size: 1.25rem;
+      margin: 2.5rem 0 1rem;
+    }
+    p {
+      margin-bottom: 1.2rem;
+    }
+    code {
+      background: rgba(0,0,0,0.04);
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.9em;
+    }
+    pre {
+      background: #f5f3f0;
+      padding: 1.2rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+      font-size: 0.85rem;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+    a:hover {
+      border-color: var(--accent);
+    }
+    .back {
+      display: inline-block;
+      margin-top: 3rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <header>
+      <h1>State Machines for Agent Workflows</h1>
+      <div class="meta">March 5, 2026 · Architecture</div>
+    </header>
+
+    <p>Most broken agents fail for the same reason: nobody can answer, "what state is this thing in right now?"</p>
+
+    <p>Prompts look linear. Production behavior is not. Retries, tool failures, stale context, and user interrupts create branching paths that are easy to miss.</p>
+
+    <h2>Make State Explicit</h2>
+
+    <p>We moved from implicit prompt flow to a finite-state model. Every run must be in one known state:</p>
+
+    <pre><code>enum AgentState {
+  Created,
+  Planning,
+  FetchingContext,
+  CallingTool,
+  WaitingForUser,
+  Synthesizing,
+  Completed,
+  Failed
+}</code></pre>
+
+    <p>Each transition is logged with timestamp, reason, and correlation ID. That single decision removed most "it got weird" debugging sessions.</p>
+
+    <h2>Guard Transitions, Not Just Outputs</h2>
+
+    <p>Teams often validate only final answers. We now validate transitions with invariants:</p>
+
+    <pre><code>rule no_direct_complete:
+  disallow Planning -> Completed
+
+rule tool_timeout_path:
+  CallingTool(timeout) -> Failed or Planning
+
+rule user_block:
+  WaitingForUser requires pending_question_id</code></pre>
+
+    <p>This catches impossible flows before users see them.</p>
+
+    <h2>Retries Become Safer</h2>
+
+    <p>Without explicit state, retries replay random chunks of work. With state machines, retries become deterministic: resume from the last successful transition and apply idempotency keys for side effects.</p>
+
+    <p>That matters for actions like ticket creation, provisioning, or payments, where duplicate execution is expensive.</p>
+
+    <h2>Observability Gets Better Immediately</h2>
+
+    <p>Dashboards become clear when each run has a known lifecycle. We use three core metrics:</p>
+
+    <pre><code>- transition_count_per_run
+- time_in_state_seconds
+- failure_rate_by_transition</code></pre>
+
+    <p>"Failure rate by transition" told us our biggest issue was not model quality. It was tool call timeout handling.</p>
+
+    <h2>How to Start</h2>
+
+    <p>You do not need a huge framework. Start with a lightweight table-driven transition map and enforce it at runtime.</p>
+
+    <pre><code>allowed[Planning] = [FetchingContext, Failed]
+allowed[FetchingContext] = [CallingTool, Synthesizing, Failed]
+allowed[CallingTool] = [Synthesizing, Planning, Failed]</code></pre>
+
+    <p>Once transitions are explicit, testing and incident response both improve. The agent becomes a system you can reason about, not a black box you hope behaves.</p>
+
+    <a href="/index.html" class="back">← Back to Home</a>
+  </article>
+</body>
+</html>

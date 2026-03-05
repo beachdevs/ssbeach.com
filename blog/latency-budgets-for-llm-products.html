@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Latency Budgets for LLM Products | Sunset Beach Labs</title>
+  <meta name="description" content="Reliable LLM UX depends on strict latency budgets. A practical framework for splitting latency across retrieval, reasoning, and generation.">
+  <meta name="keywords" content="LLM latency, performance engineering, RAG, token streaming, product engineering">
+  <link rel="canonical" href="https://ssbeach.com/blog/latency-budgets-for-llm-products.html">
+
+  <meta property="og:title" content="Latency Budgets for LLM Products">
+  <meta property="og:description" content="A practical framework for splitting latency across retrieval, reasoning, and generation.">
+  <meta property="og:url" content="https://ssbeach.com/blog/latency-budgets-for-llm-products.html">
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-03-04">
+  <meta property="article:author" content="Sunset Beach Labs">
+  <meta property="article:section" content="Performance">
+  <meta property="og:site_name" content="Sunset Beach Labs">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Latency Budgets for LLM Products">
+  <meta name="twitter:description" content="A practical framework for splitting latency across retrieval, reasoning, and generation.">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Latency Budgets for LLM Products",
+    "description": "Reliable LLM UX depends on strict latency budgets. A practical framework for splitting latency across retrieval, reasoning, and generation.",
+    "url": "https://ssbeach.com/blog/latency-budgets-for-llm-products.html",
+    "datePublished": "2026-03-04",
+    "author": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --fg: #111;
+      --fg-muted: #888;
+      --bg: #faf9f7;
+      --accent: #c8a46e;
+      --rule: #e4e0da;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--fg);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.7;
+    }
+    article {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 400;
+      font-style: italic;
+      font-size: 2.2rem;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .meta {
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+    }
+    h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 400;
+      font-size: 1.25rem;
+      margin: 2.5rem 0 1rem;
+    }
+    p {
+      margin-bottom: 1.2rem;
+    }
+    code {
+      background: rgba(0,0,0,0.04);
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.9em;
+    }
+    pre {
+      background: #f5f3f0;
+      padding: 1.2rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+      font-size: 0.85rem;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+    a:hover {
+      border-color: var(--accent);
+    }
+    .back {
+      display: inline-block;
+      margin-top: 3rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Latency Budgets for LLM Products</h1>
+      <div class="meta">March 4, 2026 · Performance</div>
+    </header>
+
+    <p>Users do not experience "model quality" first. They experience waiting.</p>
+
+    <p>If your system responds in 7 seconds, nobody cares that your benchmark score improved by 2 points. Fast products get used. Slow products get abandoned.</p>
+
+    <h2>Define the End-to-End Budget</h2>
+
+    <p>Start from UX. For an interactive assistant, we target:</p>
+
+    <pre><code>Time to first token: <= 900ms
+Time to useful answer: <= 2400ms
+P95 end-to-end: <= 3500ms</code></pre>
+
+    <p>Then distribute that budget across pipeline stages.</p>
+
+    <h2>Allocate by Stage</h2>
+
+    <pre><code>Input validation      50ms
+Retrieval            300ms
+Re-ranking           120ms
+Model start-up       180ms
+Generation          1600ms
+Post-processing      150ms
+Safety checks        100ms
+Buffer               200ms</code></pre>
+
+    <p>Every stage has an owner. If one stage exceeds its budget, the owner fixes it or negotiates a tradeoff.</p>
+
+    <h2>Use Budget-Aware Fallbacks</h2>
+
+    <p>Fallback logic should depend on remaining time, not static rules.</p>
+
+    <pre><code>if remaining_ms < 700:
+  skip_reranking()
+  reduce_context_tokens()
+  force_compact_response_mode()</code></pre>
+
+    <p>This keeps responses timely even during spikes.</p>
+
+    <h2>Stream Early, Stream Meaningfully</h2>
+
+    <p>Token streaming helps only if early tokens carry meaning. Avoid filler openings. We train prompts to emit structure first: summary sentence, then details.</p>
+
+    <p>When users see immediate relevance, they tolerate longer total completion times.</p>
+
+    <h2>Track P95 by Stage</h2>
+
+    <p>A single p95 for end-to-end latency is not enough. You need per-stage percentiles and regression alerts:</p>
+
+    <pre><code>- p95_retrieval_ms
+- p95_generation_first_token_ms
+- p95_generation_complete_ms
+- p95_safety_ms</code></pre>
+
+    <p>This tells you where the latency debt actually lives.</p>
+
+    <h2>Budgets Force Real Product Decisions</h2>
+
+    <p>You cannot optimize everything at once. Budgets make tradeoffs explicit: smaller context windows, lighter safety models on low-risk paths, or compact output formats for interactive modes.</p>
+
+    <p>That constraint is healthy. It aligns engineering, product, and design on one concrete goal: useful answers fast enough that people keep using the product.</p>
+
+    <a href="/index.html" class="back">← Back to Home</a>
+  </article>
+</body>
+</html>
