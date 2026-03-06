@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evaluation Loops for Tool-Using Agents | Sunset Beach Labs</title>
+  <meta name="description" content="Tool-using agents drift unless you measure the full loop. Evaluate plans, calls, recoveries, and final outcomes together.">
+  <meta name="keywords" content="AI agents, evaluation, tool use, LLM systems, reliability engineering">
+  <link rel="canonical" href="https://ssbeach.com/blog/evaluation-loops-for-tool-using-agents.html">
+
+  <meta property="og:title" content="Evaluation Loops for Tool-Using Agents">
+  <meta property="og:description" content="Score the whole agent loop, not just the final answer.">
+  <meta property="og:url" content="https://ssbeach.com/blog/evaluation-loops-for-tool-using-agents.html">
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-03-06">
+  <meta property="article:author" content="Sunset Beach Labs">
+  <meta property="article:section" content="AI">
+  <meta property="og:site_name" content="Sunset Beach Labs">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Evaluation Loops for Tool-Using Agents">
+  <meta name="twitter:description" content="Score the whole agent loop, not just the final answer.">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Evaluation Loops for Tool-Using Agents",
+    "description": "Tool-using agents drift unless you measure the full loop. Evaluate plans, calls, recoveries, and final outcomes together.",
+    "url": "https://ssbeach.com/blog/evaluation-loops-for-tool-using-agents.html",
+    "datePublished": "2026-03-06",
+    "author": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --fg: #111;
+      --fg-muted: #888;
+      --bg: #faf9f7;
+      --accent: #c8a46e;
+      --rule: #e4e0da;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--fg);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.7;
+    }
+    article {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 400;
+      font-style: italic;
+      font-size: 2.2rem;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .meta {
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+    }
+    h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 400;
+      font-size: 1.25rem;
+      margin: 2.5rem 0 1rem;
+    }
+    p {
+      margin-bottom: 1.2rem;
+    }
+    code {
+      background: rgba(0,0,0,0.04);
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.9em;
+    }
+    pre {
+      background: #f5f3f0;
+      padding: 1.2rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+      font-size: 0.85rem;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+    a:hover {
+      border-color: var(--accent);
+    }
+    .back {
+      display: inline-block;
+      margin-top: 3rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Evaluation Loops for Tool-Using Agents</h1>
+      <div class="meta">March 6, 2026 · AI</div>
+    </header>
+
+    <p>Most agent evaluations are too polite. They look at the final answer, mark it pass or fail, and miss the sequence of bad decisions that got there.</p>
+
+    <p>That approach breaks down once an agent plans, calls tools, retries, and synthesizes. A weak tool choice can still produce a decent answer. A strong plan can still collapse on recovery. If you only grade the output, you cannot see where drift starts.</p>
+
+    <h2>Evaluate the Loop, Not the Snapshot</h2>
+
+    <p>We score agent runs across four checkpoints: planning quality, tool call correctness, recovery behavior, and final usefulness. That gives us a traceable reason for every failure instead of a vague "model regression" label.</p>
+
+    <pre><code>score = 0.25 * plan
+      + 0.30 * tool_calls
+      + 0.20 * recovery
+      + 0.25 * final_output</code></pre>
+
+    <p>The exact weights matter less than the discipline. A complete loop score makes it obvious whether you need better prompting, better tool contracts, or better retry logic.</p>
+
+    <h2>Replay Real Runs</h2>
+
+    <p>Synthetic evals help, but replayed production traces catch the ugly edge cases. We store sanitized traces with inputs, tool responses, selected actions, and outcome labels. Every model or prompt change is tested against that replay set before rollout.</p>
+
+    <p>This is where agent teams usually find their biggest blind spot: recovery behavior under partial failure. Timeouts, malformed JSON, and stale retrieval results rarely show up in happy-path demos, but they dominate incident reviews.</p>
+
+    <h2>Measure Recovery Quality Explicitly</h2>
+
+    <p>Recovery should earn or lose points on its own. Did the agent retry the right call? Did it ask the user for clarification when the system was missing data? Did it avoid repeating an irreversible action?</p>
+
+    <pre><code>if tool_timeout:
+  allow retry_once
+  disallow side_effect_repeat
+  allow user_clarification</code></pre>
+
+    <p>Once you isolate recovery as a scored behavior, reliability work becomes concrete. You stop arguing about "agent feel" and start fixing specific failure paths.</p>
+
+    <h2>Use Evals as a Release Gate</h2>
+
+    <p>Tool-using agents need the same release discipline as any other production system. Every change should clear a minimum score, a max regression threshold, and a no-new-critical-failures rule on the replay set.</p>
+
+    <p>The teams shipping good agent products are not guessing more cleverly. They are running tighter loops. Evaluation is not a report card after the fact. It is the control system.</p>
+
+    <a href="/index.html" class="back">← Back to Home</a>
+  </article>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kill Switches for Autonomous Systems | Sunset Beach Labs</title>
+  <meta name="description" content="Autonomous systems need hard stops. Design kill switches that are fast, scoped, observable, and safe to trigger under pressure.">
+  <meta name="keywords" content="autonomous systems, reliability, incident response, kill switch, AI operations">
+  <link rel="canonical" href="https://ssbeach.com/blog/kill-switches-for-autonomous-systems.html">
+
+  <meta property="og:title" content="Kill Switches for Autonomous Systems">
+  <meta property="og:description" content="Every autonomous system needs a fast, boring path to stop doing damage.">
+  <meta property="og:url" content="https://ssbeach.com/blog/kill-switches-for-autonomous-systems.html">
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-03-06">
+  <meta property="article:author" content="Sunset Beach Labs">
+  <meta property="article:section" content="Reliability">
+  <meta property="og:site_name" content="Sunset Beach Labs">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Kill Switches for Autonomous Systems">
+  <meta name="twitter:description" content="Every autonomous system needs a fast, boring path to stop doing damage.">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Kill Switches for Autonomous Systems",
+    "description": "Autonomous systems need hard stops. Design kill switches that are fast, scoped, observable, and safe to trigger under pressure.",
+    "url": "https://ssbeach.com/blog/kill-switches-for-autonomous-systems.html",
+    "datePublished": "2026-03-06",
+    "author": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --fg: #111;
+      --fg-muted: #888;
+      --bg: #faf9f7;
+      --accent: #c8a46e;
+      --rule: #e4e0da;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--fg);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.7;
+    }
+    article {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 400;
+      font-style: italic;
+      font-size: 2.2rem;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .meta {
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+    }
+    h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 400;
+      font-size: 1.25rem;
+      margin: 2.5rem 0 1rem;
+    }
+    p {
+      margin-bottom: 1.2rem;
+    }
+    code {
+      background: rgba(0,0,0,0.04);
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.9em;
+    }
+    pre {
+      background: #f5f3f0;
+      padding: 1.2rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+      font-size: 0.85rem;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+    a:hover {
+      border-color: var(--accent);
+    }
+    .back {
+      display: inline-block;
+      margin-top: 3rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Kill Switches for Autonomous Systems</h1>
+      <div class="meta">March 6, 2026 · Reliability</div>
+    </header>
+
+    <p>The most important feature in an autonomous system is often the least glamorous one: the path that turns it off.</p>
+
+    <p>Teams spend months improving autonomy and almost no time designing the stop condition. Then an agent loops, a workflow fans out incorrectly, or a bad config escapes, and the only remaining option is a manual scramble through dashboards and deploy logs.</p>
+
+    <h2>A Kill Switch Must Be Boring</h2>
+
+    <p>Under pressure, the operator should not have to remember a runbook full of caveats. A kill switch needs one clear job: stop new actions immediately and make current state obvious.</p>
+
+    <pre><code>mode = "run" | "read_only" | "paused"
+
+if mode == "paused":
+  reject side_effecting actions
+  continue telemetry
+  allow operator inspection</code></pre>
+
+    <p>The system should fail into a quieter state, not a more confusing one.</p>
+
+    <h2>Scope Matters</h2>
+
+    <p>Global shutdown is sometimes necessary, but scoped controls are better. You want the option to pause one customer, one tool, one model route, or one workflow class without blacking out the whole system.</p>
+
+    <p>That requires control points in the architecture. If every action path bypasses a central decision layer, your kill switch is decorative.</p>
+
+    <h2>Preserve Observability While You Stop Work</h2>
+
+    <p>A common mistake is disabling the very signals needed for diagnosis. The switch should stop writes, external calls, and queued fan-out, while keeping logs, traces, audit markers, and operator views alive.</p>
+
+    <pre><code>stop:
+  outbound_calls = false
+  queue_dispatch = false
+  audit_log = true
+  trace_export = true</code></pre>
+
+    <p>Incident response is much faster when the system can still explain what it was trying to do before you froze it.</p>
+
+    <h2>Practice the Trigger</h2>
+
+    <p>If the first real use of a kill switch happens during a high-severity event, it is not ready. Teams should test activation latency, access controls, rollback behavior, and operator comprehension the same way they test backups or failover.</p>
+
+    <p>Autonomous systems earn trust when they can stop cleanly. That is not an admission of weakness. It is basic engineering discipline.</p>
+
+    <a href="/index.html" class="back">← Back to Home</a>
+  </article>
+</body>
+</html>
