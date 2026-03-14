@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schemas Before Pipelines | Sunset Beach Labs</title>
+  <meta name="description" content="Most data platform pain starts before scale. Stable schemas, ownership, and compatibility rules matter more than another pipeline.">
+  <meta name="keywords" content="data engineering, schemas, event design, pipelines, data contracts, platform">
+  <link rel="canonical" href="https://ssbeach.com/blog/schemas-before-pipelines.html">
+
+  <meta property="og:title" content="Schemas Before Pipelines">
+  <meta property="og:description" content="Stable schemas, ownership, and compatibility rules matter more than another pipeline.">
+  <meta property="og:url" content="https://ssbeach.com/blog/schemas-before-pipelines.html">
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-03-12">
+  <meta property="article:author" content="Sunset Beach Labs">
+  <meta property="article:section" content="Data">
+  <meta property="og:site_name" content="Sunset Beach Labs">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Schemas Before Pipelines">
+  <meta name="twitter:description" content="Stable schemas, ownership, and compatibility rules matter more than another pipeline.">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Schemas Before Pipelines",
+    "description": "Most data platform pain starts before scale. Stable schemas, ownership, and compatibility rules matter more than another pipeline.",
+    "url": "https://ssbeach.com/blog/schemas-before-pipelines.html",
+    "datePublished": "2026-03-12",
+    "author": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Source+Sans+3:wght@400;600&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #f7f6f3;
+      --paper: #fffefb;
+      --ink: #1a1a18;
+      --muted: #6d6b65;
+      --rule: #ddd7cc;
+      --accent: #0d6b5d;
+    }
+    body {
+      background: linear-gradient(180deg, #efeee8 0%, var(--bg) 22%, var(--bg) 100%);
+      color: var(--ink);
+      font-family: 'Source Serif 4', Georgia, serif;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+    article {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 3.2rem 1.25rem 4.5rem;
+    }
+    .sheet {
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+      padding: 2rem 1.8rem;
+    }
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: 1.4rem;
+      color: var(--muted);
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      line-height: 1;
+      letter-spacing: -0.04em;
+      margin-bottom: 1rem;
+    }
+    .deck {
+      font-size: 1.16rem;
+      color: var(--muted);
+      margin-bottom: 1.6rem;
+    }
+    h2 {
+      font-size: 1.45rem;
+      line-height: 1.15;
+      margin: 2rem 0 0.8rem;
+    }
+    p, ul {
+      margin-bottom: 1rem;
+      font-size: 1.07rem;
+    }
+    ul {
+      padding-left: 1.2rem;
+    }
+    li + li {
+      margin-top: 0.4rem;
+    }
+    code, pre {
+      font-family: 'Source Code Pro', monospace;
+    }
+    code {
+      background: #f0f4f3;
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+    pre {
+      background: #f5f7f6;
+      border: 1px solid #d9e4e1;
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 1.2rem 0;
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .back {
+      display: inline-block;
+      margin-top: 1.75rem;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <div class="sheet">
+      <div class="meta">
+        <span>March 12, 2026</span>
+        <span>Data</span>
+      </div>
+      <h1>Schemas Before Pipelines</h1>
+      <p class="deck">The fastest way to create a fragile data platform is to invest in movement before you invest in meaning.</p>
+
+      <p>Teams usually notice data quality problems only after they have built enough pipelines to make the mess expensive. At that point, every dashboard has a different definition, every event name has three spellings, and nobody knows which table is safe to use.</p>
+
+      <p>The root problem is rarely throughput. It is weak contracts.</p>
+
+      <h2>Pipelines Cannot Rescue Undefined Events</h2>
+
+      <p>If an upstream producer emits inconsistent payloads, downstream tooling only spreads the damage faster.</p>
+
+      <pre><code>{
+  "event": "checkout_completed",
+  "user_id": "4821",
+  "amount": "19.99",
+  "currency": "usd"
+}</code></pre>
+
+      <p>Looks harmless. Then another service ships <code>amount_cents</code>, a third omits currency, and a fourth sends guest checkouts with no user identifier. Now analytics, fraud, billing, and ML each patch around the inconsistency in different ways.</p>
+
+      <h2>Start with Ownership</h2>
+
+      <p>Every schema needs a real owner. Not a team name in a wiki. A team with operational responsibility for changes, compatibility, and documentation.</p>
+
+      <ul>
+        <li>Who approves field additions?</li>
+        <li>Who can deprecate a field?</li>
+        <li>Who is paged when downstream consumers break?</li>
+      </ul>
+
+      <p>If ownership is vague, compatibility will be vague too.</p>
+
+      <h2>Make Compatibility Rules Boring and Strict</h2>
+
+      <p>Most producers should be allowed to add optional fields, but not rename or silently change meaning. That rule alone prevents a large class of downstream breakage.</p>
+
+      <pre><code>Allowed:
+- add optional field
+- widen enum with review
+
+Not allowed:
+- change units
+- repurpose existing field
+- delete field without migration window</code></pre>
+
+      <h2>Schema Reviews Are Product Reviews</h2>
+
+      <p>Good schema design is not clerical work. It forces product clarity.</p>
+
+      <p>When someone cannot answer whether a value is pre-tax or post-tax, gross or net, local time or UTC, the product behavior is already ambiguous. The schema review just exposed it.</p>
+
+      <h2>Warehouse Cleanups Are Too Late</h2>
+
+      <p>Many organizations rely on dbt models or warehouse transforms to normalize upstream inconsistency. Those layers are useful, but they should not be the first line of defense.</p>
+
+      <p>Correcting bad semantics downstream is expensive because consumers already built expectations on the broken shape.</p>
+
+      <h2>Meaning Scales Better Than Movement</h2>
+
+      <p>A small platform with clear event contracts will outperform a sophisticated platform full of ambiguous payloads. Stable meaning makes every pipeline, dashboard, and model easier to build.</p>
+
+      <p>Build movement second. Build meaning first.</p>
+
+      <a href="/index.html" class="back">← Back to Home</a>
+    </div>
+  </article>
+</body>
+</html>

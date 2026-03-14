@@ -2,9 +2,33 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://ssbeach.com/</loc>
-    <lastmod>2026-03-06</lastmod>
+    <lastmod>2026-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://ssbeach.com/blog/prompt-contracts-for-reliable-agents.html</loc>
+    <lastmod>2026-03-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ssbeach.com/blog/runbooks-for-on-call-automation.html</loc>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ssbeach.com/blog/schemas-before-pipelines.html</loc>
+    <lastmod>2026-03-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ssbeach.com/blog/cache-invalidation-for-real-time-apis.html</loc>
+    <lastmod>2026-03-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://ssbeach.com/blog/evaluation-loops-for-tool-using-agents.html</loc>
@@ -44,13 +68,13 @@
   </url>
   <url>
     <loc>https://ssbeach.com/blog/building-ai-agents-that-actually-work.html</loc>
-    <lastmod>2026-02-12</lastmod>
+    <lastmod>2026-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://ssbeach.com/blog/the-end-of-config-hell.html</loc>
-    <lastmod>2026-02-12</lastmod>
+    <lastmod>2026-01-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -62,25 +86,25 @@
   </url>
   <url>
     <loc>https://ssbeach.com/blog/database-performance-at-10-million-qps.html</loc>
-    <lastmod>2026-02-12</lastmod>
+    <lastmod>2026-02-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://ssbeach.com/blog/apis-that-developers-love.html</loc>
-    <lastmod>2026-02-12</lastmod>
+    <lastmod>2026-02-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://ssbeach.com/blog/zero-trust-without-the-pain.html</loc>
-    <lastmod>2026-02-12</lastmod>
+    <lastmod>2026-03-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://ssbeach.com/blog/observability-for-systems-that-cant-fail.html</loc>
-    <lastmod>2026-02-12</lastmod>
+    <lastmod>2026-03-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

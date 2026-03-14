@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cache Invalidation for Real-Time APIs | Sunset Beach Labs</title>
+  <meta name="description" content="Real-time APIs do not eliminate caching. They force better invalidation design across keys, fan-out, freshness windows, and repair paths.">
+  <meta name="keywords" content="cache invalidation, APIs, realtime systems, freshness, performance, distributed systems">
+  <link rel="canonical" href="https://ssbeach.com/blog/cache-invalidation-for-real-time-apis.html">
+
+  <meta property="og:title" content="Cache Invalidation for Real-Time APIs">
+  <meta property="og:description" content="Real-time APIs still need caching. They just need better invalidation design.">
+  <meta property="og:url" content="https://ssbeach.com/blog/cache-invalidation-for-real-time-apis.html">
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-03-11">
+  <meta property="article:author" content="Sunset Beach Labs">
+  <meta property="article:section" content="Performance">
+  <meta property="og:site_name" content="Sunset Beach Labs">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Cache Invalidation for Real-Time APIs">
+  <meta name="twitter:description" content="Real-time APIs still need caching. They just need better invalidation design.">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Cache Invalidation for Real-Time APIs",
+    "description": "Real-time APIs do not eliminate caching. They force better invalidation design across keys, fan-out, freshness windows, and repair paths.",
+    "url": "https://ssbeach.com/blog/cache-invalidation-for-real-time-apis.html",
+    "datePublished": "2026-03-11",
+    "author": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #eef4f1;
+      --surface: #fbfffd;
+      --ink: #101a17;
+      --muted: #5d6b67;
+      --rule: #d3ded8;
+      --accent: #0d8f6f;
+    }
+    body {
+      background:
+        linear-gradient(135deg, rgba(13, 143, 111, 0.06), transparent 42%),
+        var(--bg);
+      color: var(--ink);
+      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+    article {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 3rem 1.25rem 4rem;
+    }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      padding: 1.7rem;
+    }
+    .meta {
+      display: inline-block;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 1rem;
+    }
+    h1 {
+      font-size: clamp(2rem, 5.5vw, 3.1rem);
+      line-height: 1;
+      letter-spacing: -0.05em;
+      margin-bottom: 1rem;
+      max-width: 13ch;
+    }
+    h2 {
+      font-size: 1.3rem;
+      margin: 1.9rem 0 0.8rem;
+      line-height: 1.15;
+    }
+    p, ul {
+      font-size: 1.02rem;
+      margin-bottom: 1rem;
+    }
+    ul {
+      padding-left: 1.2rem;
+    }
+    li + li {
+      margin-top: 0.4rem;
+    }
+    code, pre {
+      font-family: 'Space Mono', monospace;
+    }
+    code {
+      background: #eef7f3;
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+    pre {
+      background: #0f1715;
+      color: #effcf6;
+      border-radius: 10px;
+      padding: 1rem;
+      overflow-x: auto;
+      margin: 1.2rem 0;
+      font-size: 0.84rem;
+      line-height: 1.65;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .back {
+      display: inline-block;
+      margin-top: 1.6rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <div class="panel">
+      <div class="meta">March 11, 2026 · Performance</div>
+      <h1>Cache Invalidation for Real-Time APIs</h1>
+
+      <p>Real-time systems do not remove the need for caches. They remove your excuses for bad invalidation.</p>
+
+      <p>Teams often say they need "live data" and treat that as a reason to bypass caching entirely. The result is usually higher cost, noisier dependencies, and worse tail latency. Freshness matters, but it still has to be engineered.</p>
+
+      <h2>Freshness Is a Product Requirement</h2>
+
+      <p>The first question is not "Redis or CDN?" It is "how stale is acceptable for this surface?"</p>
+
+      <ul>
+        <li>Portfolio balances may need sub-second freshness.</li>
+        <li>Activity feeds may tolerate a few seconds.</li>
+        <li>Aggregate dashboards may tolerate a minute if the UI says so.</li>
+      </ul>
+
+      <p>Once freshness is explicit, cache policy becomes an engineering problem instead of an argument.</p>
+
+      <h2>Invalidate by Dependency, Not by Guessing</h2>
+
+      <p>Good invalidation starts with key design. A cached object should be traceable to the entities and events that can make it wrong.</p>
+
+      <pre><code>cache key:
+feed:user:4821:v17
+
+dependencies:
+- follow graph for user 4821
+- posts by followed authors
+- mute/block settings</code></pre>
+
+      <p>If you cannot name the dependencies, you cannot invalidate correctly.</p>
+
+      <h2>Fan-Out Needs a Repair Path</h2>
+
+      <p>Event-driven invalidation is never perfect. Messages arrive late. Consumers crash. One region lags behind another. Real-time systems need a repair loop in addition to push invalidation.</p>
+
+      <ul>
+        <li>Short TTLs on critical paths.</li>
+        <li>Background reconciliation for hot keys.</li>
+        <li>Version checks when serving cache hits.</li>
+      </ul>
+
+      <h2>Do Not Over-Broadcast</h2>
+
+      <p>Many systems solve invalidation uncertainty by purging whole namespaces. That works until traffic spikes.</p>
+
+      <p>Broad invalidation turns one write into a read storm. The database pays for your lack of precision.</p>
+
+      <h2>Stale-While-Revalidate Is a UX Tool</h2>
+
+      <p>For non-critical surfaces, stale-while-revalidate keeps the interface fast while background refresh repairs freshness. That is often better than blocking every request on the newest possible value.</p>
+
+      <pre><code>serve cached response if age &lt; 5s
+revalidate async if age &gt; 2s
+force origin read if critical bit changed</code></pre>
+
+      <h2>Measure Correctness, Not Just Hit Rate</h2>
+
+      <p>A 98% cache hit rate can hide a broken system. You also need freshness metrics:</p>
+
+      <ul>
+        <li>cache hit age by endpoint</li>
+        <li>event-to-invalidation delay</li>
+        <li>stale serve rate on critical entities</li>
+        <li>repair success rate after missed invalidation</li>
+      </ul>
+
+      <p>That is how you know whether the API is both fast and right.</p>
+
+      <a href="/index.html" class="back">← Back to Home</a>
+    </div>
+  </article>
+</body>
+</html>

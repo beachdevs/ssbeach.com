@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prompt Contracts for Reliable Agents | Sunset Beach Labs</title>
+  <meta name="description" content="Reliable agents need prompt contracts, not prompt vibes. Define inputs, tool rules, failure modes, and output guarantees like an interface.">
+  <meta name="keywords" content="prompt engineering, AI agents, contracts, LLM reliability, agent design">
+  <link rel="canonical" href="https://ssbeach.com/blog/prompt-contracts-for-reliable-agents.html">
+
+  <meta property="og:title" content="Prompt Contracts for Reliable Agents">
+  <meta property="og:description" content="Define inputs, tool rules, failure modes, and output guarantees like an interface.">
+  <meta property="og:url" content="https://ssbeach.com/blog/prompt-contracts-for-reliable-agents.html">
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-03-14">
+  <meta property="article:author" content="Sunset Beach Labs">
+  <meta property="article:section" content="AI">
+  <meta property="og:site_name" content="Sunset Beach Labs">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Prompt Contracts for Reliable Agents">
+  <meta name="twitter:description" content="Reliable agents need prompt contracts, not prompt vibes.">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Prompt Contracts for Reliable Agents",
+    "description": "Reliable agents need prompt contracts, not prompt vibes. Define inputs, tool rules, failure modes, and output guarantees like an interface.",
+    "url": "https://ssbeach.com/blog/prompt-contracts-for-reliable-agents.html",
+    "datePublished": "2026-03-14",
+    "author": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Sunset Beach Labs"
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #f3f4ef;
+      --surface: #ffffff;
+      --ink: #151515;
+      --muted: #656565;
+      --rule: #d8d8cf;
+      --accent: #1769aa;
+      --accent-soft: #e8f1f8;
+    }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+    article {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 3rem 1.25rem 4rem;
+    }
+    .frame {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      padding: 2rem;
+    }
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 1rem;
+      padding: 0.35rem 0.55rem;
+      border: 1px solid var(--rule);
+      background: var(--accent-soft);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    h1 {
+      font-size: clamp(2rem, 6vw, 3.4rem);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      margin-bottom: 0.75rem;
+    }
+    .meta {
+      color: var(--muted);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: 1.5rem;
+    }
+    h2 {
+      font-size: 1.35rem;
+      line-height: 1.2;
+      margin: 2rem 0 0.8rem;
+    }
+    p, ul {
+      font-size: 1.03rem;
+      margin-bottom: 1rem;
+    }
+    ul {
+      padding-left: 1.2rem;
+    }
+    li + li {
+      margin-top: 0.45rem;
+    }
+    code {
+      font-family: 'IBM Plex Mono', monospace;
+      background: #f5f7f8;
+      padding: 0.12rem 0.35rem;
+      border-radius: 4px;
+      font-size: 0.92em;
+    }
+    pre {
+      margin: 1.3rem 0;
+      padding: 1rem;
+      overflow-x: auto;
+      background: #111827;
+      color: #f8fafc;
+      border-radius: 10px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.87rem;
+      line-height: 1.6;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .back {
+      display: inline-block;
+      margin-top: 1.5rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <div class="frame">
+      <div class="eyebrow">Reliable Interfaces for LLMs</div>
+      <header>
+        <h1>Prompt Contracts for Reliable Agents</h1>
+        <div class="meta">March 14, 2026 · AI</div>
+      </header>
+
+      <p>Most prompt failures are not language failures. They are interface failures.</p>
+
+      <p>Teams describe an agent with fuzzy goals like "be helpful," "use tools when needed," and "act like a senior engineer." Then they act surprised when the system becomes inconsistent across edge cases. That is the software equivalent of deploying an API with no schema.</p>
+
+      <h2>Prompts Should Behave Like Contracts</h2>
+
+      <p>A production prompt needs the same clarity we expect from any interface:</p>
+
+      <ul>
+        <li>What inputs are guaranteed to exist.</li>
+        <li>What the model may assume versus what it must verify.</li>
+        <li>When a tool call is required before answering.</li>
+        <li>What output shape is acceptable.</li>
+        <li>What failure behavior is preferred when information is missing.</li>
+      </ul>
+
+      <p>If those rules live only in the developer's head, the agent has no stable operating boundary.</p>
+
+      <h2>Separate Policy from Persona</h2>
+
+      <p>Persona text is the least important part of most agent prompts. Policy text is what matters.</p>
+
+      <pre><code>Policy:
+- Verify time-sensitive claims before answering.
+- Never invent tool results.
+- Ask for clarification only when a wrong assumption is risky.
+
+Persona:
+- Direct
+- Calm
+- Technical</code></pre>
+
+      <p>When persona overwhelms policy, the model sounds confident while doing the wrong thing. That is worse than a dry answer that is correct.</p>
+
+      <h2>Define Tool Preconditions Explicitly</h2>
+
+      <p>Do not write "use the web if necessary." Write the condition.</p>
+
+      <pre><code>Use search when:
+- the answer may have changed recently
+- the user asks for latest information
+- a specific URL or paper is referenced
+- a mistake would create financial, legal, or medical risk</code></pre>
+
+      <p>Concrete trigger conditions reduce variance. They also make evaluation possible because reviewers can score whether the agent followed the contract.</p>
+
+      <h2>State the Failure Mode You Want</h2>
+
+      <p>An unreliable agent is often one that is punished implicitly for uncertainty. If every hesitant answer feels like failure, the model learns to bluff.</p>
+
+      <p>Tell it what to do instead:</p>
+
+      <ul>
+        <li>Say what is known.</li>
+        <li>Flag the missing piece.</li>
+        <li>Take the next safe action, such as searching or asking one short question.</li>
+      </ul>
+
+      <h2>Contract Drift Is Real</h2>
+
+      <p>Prompts rot the same way APIs rot. More constraints get appended. Old rules contradict new ones. Tool descriptions evolve while the system prompt stays frozen.</p>
+
+      <p>Review prompts as interfaces. Version them. Remove dead rules. Merge duplicates. Test the contract with adversarial inputs, not just happy-path demos.</p>
+
+      <h2>Reliable Agents Are Boring on Purpose</h2>
+
+      <p>The goal is not a prompt that feels magical. The goal is a prompt that behaves predictably when the request is ambiguous, the context is incomplete, and the clock is running.</p>
+
+      <p>That is what contracts are for. They turn prompting from folk art into systems engineering.</p>
+
+      <a href="/index.html" class="back">← Back to Home</a>
+    </div>
+  </article>
+</body>
+</html>
